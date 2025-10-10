@@ -1,4 +1,13 @@
-# Functionalities - Main Pages
+# Funcionalities
+
+This section serves to present the requirements these system must satisfy, such as:
+- [**Main Pages**](#main-pages): the main pages the system must provide
+- [**Dataset**](#dataset): the dataset in each entity
+- [**Use Cases**](#use-cases): use cases of each functionality
+- [**Validation**](#validations): list of validations the system should have
+- [**Architecture**](#architecture): architecture of the system
+
+# Main Pages
 
 ### Users
 
@@ -24,11 +33,11 @@
     - Is active?
     - Bus Pass
     - Discounts user has
-    - List of travels done, indicating if the user drove or not and rating
+    - List of trips completed, indicating if the user drove or not and rating
     - List of places this user visited
     - List of bus the user drives (DRIVER ONLY)
     - Total price
-- Be able to rate a travel
+- Be able to rate a trip
 - List of users who makes birthday
 - Be able to create, list, change or delete bus pass
 
@@ -54,7 +63,7 @@
     - When was created
     - Total seats
     - Is accessible to disable person?
-    - List of travels done
+    - List of trips completed
     - List of drivers
     - Time expected
     - Price of travel - Base
@@ -67,7 +76,7 @@
 
 ### Trips
 
-- Be able to list travels, seeing:
+- Be able to list trips, seeing:
     - ID
     - Status
     - Departure point
@@ -76,13 +85,12 @@
     - Departure date
     - Arrival date
     - Number os passengers
-- See travels user can join in
-- Be able to create a travel
-- Be able to update and delete a travel
-- Be able to join or leave a travel
-- Driver can add a delay
-- Users can rate their travels
-- Be able to see information of a travel, such as:
+- See trips user can join in
+- Be able to create a trip
+- Be able to update and delete a trip
+- Be able to book or leave a trip
+- Users can rate their trips
+- Be able to see information of a trip, such as:
     - ID
     - Status
     - Bus
@@ -116,16 +124,16 @@
     - Number of users active
     - Number of buses
     - Number of active buses
-    - Number of travels
-    - Number of travels realized
-    - Number of travels cancelled
+    - Number of trips
+    - Number of trips realized
+    - Number of trips cancelled
     - Number of bus pass types
     - Number of places
 - Indicating a date, displays information about its subdates, such as:
     - Number of users created
-    - Number of travels
-    - Number of travels cancelled
-    - Percentage of travels with delay
+    - Number of trips
+    - Number of trips cancelled
+    - Percentage of trips with delay
     - Number of passengers
     - Number of unique passengers
 
@@ -137,22 +145,22 @@
 
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
-| **id** | Unique user identifier | `afbc` |
+| **id** | Unique user identifier | `"afbc"` |
 | **name** | Name of the user | `"André Silva"` |
 | **level** | User type | `Traveller` \| `Driver` \| `Administrator` |
 | **adminSinceDate** | When this account was administrator? | `"2024-07-32"` |
-| **inactiveDate** | When the account was inactive? _(if null, user is active)_ | `2024-11-30 17:37:13` |
-| **inactivationAccountUser** | Who inactivated the account? | `fge` |
+| **inactiveDate** | When the account was inactive? _(if null, user is active)_ | `"2024-11-30 17:37:13"` |
+| **inactivationAccountUser** | Who inactivated the account? _(user ID)_ | `"fge"` |
 | **email** | Email address | `"andre@email.com"` |
 | **birthDate** | Date of birth | `"1995-04-12"` |
 | **sex** | Gender of user | `Male`, `Female`, `Non specified` |
-| **countryCode** | Country Code | `"PT"`, `"ES"` |
+| **countryCode** | ID of country code | `1` |
 | **accountCreation** | Date the account was created | `"2023-06-10 16:36:15"` |
 | **public** | Is the profile public? | `true`, `false` |
 | **isDisable** | Is the person disable? | `true`, `false` |
-| **busPassID** | What bus pass this user has _(can be null)_ | `RGL` |
-| **busPassValidFrom** | When bus pass was obtained _(can be null)_ | `2024-10-09` |
-| **busPassValidTo** | Last day the bus pass is valid _(can be null)_ | `2024-11-09` |
+| **busPassID** | What bus pass this user has _(can be null)_ | `"RGL"` |
+| **busPassValidFrom** | When bus pass was obtained _(can be null)_ | `"2024-10-09"` |
+| **busPassValidTo** | Last day the bus pass is valid _(can be null)_ | `"2024-11-09"` |
 
 ---
 
@@ -161,8 +169,8 @@
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
 | **id** | Unique country code identifier | `1` |
-| **abbreviation** | Abbreviation of the country | `PT` |
-| **name** | Name of Country | `Portugal` |
+| **abbreviation** | Abbreviation of the country | `"PRT"` |
+| **name** | Name of Country | `"Portugal"` |
 
 ---
 
@@ -170,7 +178,7 @@
 
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
-| **id** | ID of the Bus Pass | `RGL` |
+| **id** | ID of the Bus Pass | `"RGL"` |
 | **discount** | Percentage of discount this bus pass provides | `40.0` |
 | **localityLevel** | What level this bus pass includes | `1` \| `2` \| `3` |
 | **duration** | How many days this bus pass is valid | `30` |
@@ -182,15 +190,15 @@
 
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
-| **id** | Unique bus identifier | `TGFDA` |
+| **id** | Unique bus identifier | `"TGFDA"` |
 | **company** | Company that owns the bus | `"TUF"`, `"myBus Express"` |
 | **level** | Service level of the bus | `Standard`, `Express`, `Luxury` |
-| **startingPoint** | Starting location | `"Braga"` |
-| **endingPoint** | Ending location | `"Porto"` |
-| **busInactiveDate** | When bus stopped being operational? _(if is active, there is no date)_ | `2024-12-06 18:00:45` |
-| **inactivationBusUser** | Who inactivated the bus? | `fge` |
+| **startingPoint** | ID of Starting location | `2` |
+| **endingPoint** | ID of Ending location | `3` |
+| **busInactiveDate** | When bus stopped being operational? _(if is active, there is no date)_ | `"2024-12-06 18:00:45"` |
+| **inactivationBusUser** | Who inactivated the bus? | `"fge"` |
 | **busCreation** | Date the bus was registered in the system | `"2024-01-15 08:35:23"` |
-| **busCreationUser** | Who created the bus? | `afbc` |
+| **busCreationUser** | Who created the bus? | `"afbc"` |
 | **totalSeats** | Total number of seats | `45` |
 | **wheelchairAccessible** | Is bus accessible for wheelchairs? | `true`, `false` |
 | **travelTime** | Estimated travel duration (in minutes) | `75` _(1h15min)_ |
@@ -213,8 +221,8 @@
 
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
-| **busID** | ID of the bus assigned to the driver | `TGFDA` |
-| **userID** | ID of the user who is the driver | `afbc` |
+| **busID** | ID of the bus assigned to the driver | `"TGFDA"` |
+| **userID** | ID of the user who is the driver | `"afbc"` |
 | **assignmentDate** | Date the driver was assigned to the bus | `"2024-03-10"` |
 | **isActive** | Is the driver active? | `true`, `false` |
 
@@ -225,8 +233,8 @@
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
 | **id** | Unique trip identifier | `3001` |
-| **busID** | ID of the bus used | `TGFDA` |
-| **driverID** | ID of the driver assigned | `afbc` |
+| **busID** | ID of the bus used | `"TGFDA"` |
+| **driverID** | ID of the driver assigned | `"afbc"` |
 | **scheduleDepartureDate** | Scheduled date of departure | `"2024-10-05 08:30:00"` |
 | **scheduleArrivalDate** | Scheduled date of arrival | `"2024-10-05 09:45:00"` |
 | **realDepartureDate** | Real date of departure | `"2024-10-05 08:35:00"` |
@@ -238,9 +246,9 @@
 | Name of Attribute | Description | Examples |
 |-------------------|-------------|-----------|
 | **tripID** | ID of the trip | `3001` |
-| **userID** | ID of the user in that trip | `afbc` |
+| **userID** | ID of the user in that trip | `"afbc"` |
 | **bookedDate** | Date the user booked the trip | `"2024-10-05 07:35:00"` |
-| **boardingDate** | Date the user got on the bus | `"2024-10-05 08:25:00 "` |
+| **boardingDate** | Date the user got on the bus | `"2024-10-05 08:25:00"` |
 | **price** | What was the price paid for the trip (euros) | `1.55` |
 | **rating** | User's rating of the trip | `Not Rated` \| `1` \| `2` \| `3` \| `4` \| `5` |
 
@@ -330,7 +338,7 @@
 | [delete-locality.md](use-cases/locality/delete-locality.md) | Deletes a locality. | `DELETE /localities/{id}` |
 | [edit-locality.md](use-cases/locality/edit-locality.md) | Updates a locality. | `PUT /localities/{id}` |
 | [list-localities.md](use-cases/locality/list-localities.md) | Returns all localities. | `GET /localities` |
-| [locality-of-users.md](use-cases/locality/locality-of-users.md) | Lists all localities visited by an user. | `GET /localitiesUser/{id}` |
+| [locality-of-users.md](use-cases/locality/locality-of-users.md) | Lists all localities visited by an user. | `GET /localities?user={id}` |
 
 ---
 
@@ -344,3 +352,68 @@
 ---
 
 # Validations
+
+- **User level** can be:
+    - Traveller
+    - Driver
+    - Administrator
+- **Visibility of user** if is private:
+    - Some details are shown
+    - Trips, as traveller, are not shown
+- **Dates** must follow these formats:
+    - `yyyy-mm-dd` _year-month-day_
+    - `yyyy-MM-dd hh:mm:ss` _year-month-day hour:minute:second_
+    - _Only digits allowed_
+- **Email** should have this format:
+    - `<name>@<domain>.<TLD>`
+    - Name length > 0
+    - Domain length > 0
+    - TLD >=2 
+- **Sex** can have these options:
+    - Male
+    - Female
+    - Non specified
+- **Country Code** abbreviation must have 3 letters and follow ISO3:
+    - Country code is shown in upper case
+    - Country code provided is insensitive letter case
+- **Boolean values** are:
+    - **False**:
+        - false
+        - 0
+        - ""
+    - **True**:
+        - true
+        - 1
+- **Bus Pass ID** must have 3 letters:
+    - ID is shown in upper case
+    - ID provided is insensitive letter case
+- **Locality Level** can be:
+    - 1 (nearest)
+    - 2
+    - 3 (furthest)
+- **Bus ID** must have 5 letters:
+    - ID is shown in upper case
+    - ID provided is insensitive letter case
+- **Level of bus** can be these:
+    - Standard _(Regular)_
+    - Express _(Fast)_
+    - Luxury _(Has confort)_
+- **Visibility of bus**: 
+    - If is private, no user _(travellers)_ can book trips
+- **Inactive drivers** cannot create trips
+- **Trip status** can be:
+    - Scheduled
+    - Ongoing
+    - Completed
+    - Cancelled
+- **Trip rating** can be:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - Not rated
+- Trip mean rating should not use not ratings
+- Double numbers should be rounded in the third decimal number
+
+# Architecture
