@@ -149,18 +149,18 @@ This section serves to present the requirements these system must satisfy, such 
 | **name** | Name of the user | `"André Silva"` |
 | **level** | User type | `Traveller` \| `Driver` \| `Administrator` |
 | **adminSinceDate** | When this account was administrator? | `"2024-07-32"` |
-| **inactiveDate** | When the account was inactive? _(if null, user is active)_ | `"2024-11-30 17:37:13"` |
-| **inactivationAccountUser** | Who inactivated the account? _(user ID)_ | `"fge"` |
+| **inactiveDate** | When the account was inactive? _(if null, user is active)_ | `"2024-11-30"` |
+| **inactiveAccountUser** | Who inactivated the account? _(user ID)_ | `"fge"` |
 | **email** | Email address | `"andre@email.com"` |
 | **birthDate** | Date of birth | `"1995-04-12"` |
 | **sex** | Gender of user | `Male`, `Female`, `Non specified` |
 | **countryCode** | ID of country code | `1` |
 | **accountCreation** | Date the account was created | `"2023-06-10 16:36:15"` |
-| **public** | Is the profile public? | `true`, `false` |
-| **isDisable** | Is the person disable? | `true`, `false` |
+| **isPublic** | Is the profile public? | `true`, `false` |
+| **isDisablePerson** | Is the person disable? | `true`, `false` |
 | **busPassID** | What bus pass this user has _(can be null)_ | `"RGL"` |
 | **busPassValidFrom** | When bus pass was obtained _(can be null)_ | `"2024-10-09"` |
-| **busPassValidTo** | Last day the bus pass is valid _(can be null)_ | `"2024-11-09"` |
+| **busPassValidUntil** | Last day the bus pass is valid _(can be null)_ | `"2024-11-09"` |
 
 ---
 

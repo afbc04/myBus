@@ -1,0 +1,15 @@
+<templates>
+
+    <template id="get">
+        <body required="true">
+            <i name="username" required="true"/>
+            <i name="password" required="true"/>
+            <i name="grant_type" required="true"/>
+        </body>
+    </template>
+
+    <template id="get2">
+        <auth required="true" />
+    </template>
+
+</templates>
