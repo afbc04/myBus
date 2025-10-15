@@ -22,14 +22,14 @@ namespace PacketHandlers {
 
     public class PacketSuccess : SendingPacket {
 
-        public IDictionary<string,object>? body;
+        public object? body;
 
         public PacketSuccess(int status_code) {
             this.body = null;
             this.status_code = status_code;
         }
 
-        public PacketSuccess(int status_code, IDictionary<string,object> response) {
+        public PacketSuccess(int status_code, object response) {
             this.body = response;
             this.status_code = status_code;
         }
@@ -38,13 +38,25 @@ namespace PacketHandlers {
 
     public class PacketFail : SendingPacket {
 
-        public string error_message;
+        public string? error_message;
         public IDictionary<string,object>? extra_message = null;
 
         public PacketFail(string error_message, int status_code, IDictionary<string,object>? extra_message) {
             this.status_code = status_code;
             this.error_message = error_message;
             this.extra_message = extra_message;
+        }
+
+        public PacketFail(string error_message, int status_code) {
+            this.status_code = status_code;
+            this.error_message = error_message;
+            this.extra_message = null;
+        }
+
+        public PacketFail(int status_code) {
+            this.status_code = status_code;
+            this.error_message = null;
+            this.extra_message = null;
         }
 
     }

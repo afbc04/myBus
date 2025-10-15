@@ -36,8 +36,8 @@ namespace PacketTemplates {
         public bool is_required { get; set; }
         public Dictionary<string, TemplateValidatorField> body { get; set; }
 
-        public TemplateValidatorBody(bool isRequired) {
-            this.is_required = isRequired;
+        public TemplateValidatorBody(bool is_required) {
+            this.is_required = is_required;
             this.body = new();
         }
 
@@ -50,8 +50,8 @@ namespace PacketTemplates {
         
         public bool is_required { get; set; }
 
-        public TemplateValidatorAuth(bool isRequired) {
-            this.is_required = isRequired;
+        public TemplateValidatorAuth(bool is_required) {
+            this.is_required = is_required;
         }
 
     }
