@@ -2,9 +2,11 @@ DELETE TABLE Users;
 DELETE TABLE BusPasses;
 DELETE TABLE CountryCodes;
 
+CREATE DATABASE myBus;
+USE myBus;
+
 CREATE TABLE IF NOT EXISTS CountryCodes (
-  id SERIAL PRIMARY KEY,
-  abbreviation CHAR(3) NOT NULL,
+  id CHAR(3) PRIMARY KEY,
   name VARCHAR(20) NOT NULL
 );
 
@@ -27,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Users (
   email VARCHAR(30) NULL,
   birthDate DATE NULL,
   sex CHAR(1) NOT NULL,
-  countryCode INT NULL,
+  countryCode CHAR(3) NULL,
   accountCreation TIMESTAMP NOT NULL,
   isPublic BOOLEAN NOT NULL,
   isDisablePerson BOOLEAN NULL,

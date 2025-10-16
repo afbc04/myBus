@@ -1,7 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://*:25000");
+builder.WebHost.UseUrls("http://*:80");
 
 ProgramHandler.load_templates();
+//Controller.ControllerManager.
 
 var app = builder.Build();
 
