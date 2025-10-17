@@ -1,5 +1,6 @@
 using PacketHandlers;
 using Token;
+using Pages;
 
 namespace Routers;
 
@@ -10,81 +11,82 @@ public static class CountryCodeRouters {
         var app = group.MapGroup("/countryCodes").AllowAnonymous();
 
         // POST /v1.0/countryCodes
-        app.MapPost("", (HttpRequest request) =>
+        app.MapPost("", async (HttpRequest request) =>
 
-            PacketUtils.validate_and_reply(request, "countryCodes/create", async (packet) => {
-                return await Task.FromResult(PacketUtils.send_packet(Controller.ControllerManager.controller.createCountryCode(
+            await PacketUtils.validate_and_reply(request, "countryCodes/create", async (packet) => {
+                return PacketUtils.send_packet(await API.controller!.create_country_code(
+
                     packet.access_token,
                     (string) packet.body!["id"],
                     (string) packet.body!["name"]
-                    )));
+                    
+                    ));
             })
 
         );
 
         // GET /v1.0/countryCodes
-        app.MapGet("", (HttpRequest request) =>
+        app.MapGet("", async (HttpRequest request) => {
 
-            PacketUtils.validate_and_reply(request, "countryCodes/get", async (packet) => {
-                return await Task.FromResult(PacketUtils.send_packet(Controller.ControllerManager.controller.listCountryCode(
-                    packet.access_token
-                    )));
+            PageInput page = new(request);
+
+            return await PacketUtils.validate_and_reply(request, "countryCodes/get", async (packet) => {
+                return PacketUtils.send_packet(await API.controller!.list_country_code(
+
+                    packet.access_token,
+                    page
+
+                    ));
+            });
+
+        });
+
+        // DELETE /v1.0/countryCodes
+        app.MapDelete("", async (HttpRequest request) =>
+
+            await PacketUtils.validate_and_reply(request, "countryCodes/delete", async (packet) => {
+                return PacketUtils.send_packet(await API.controller!.clear_country_code(packet.access_token));
             })
 
         );
 
         // GET /v1.0/countryCodes/{id}
-        app.MapGet("{id}", (HttpRequest request, string id) =>
+        app.MapGet("{id}", async (HttpRequest request, string id) =>
 
-            PacketUtils.validate_and_reply(request, "countryCodes/get", async (packet) => {
+            await PacketUtils.validate_and_reply(request, "countryCodes/get", async (packet) => {
 
-                var result = Controller.ControllerManager.controller.getCountryCode(packet.access_token, id);
-                return await Task.FromResult(PacketUtils.send_packet(result));
+                var result = await API.controller!.get_country_code(packet.access_token, id);
+                return PacketUtils.send_packet(result);
 
             })
 
         );
 
         // DELETE /v1.0/countryCodes/{id}
-        app.MapDelete("{id}", (HttpRequest request, string id) =>
+        app.MapDelete("{id}", async (HttpRequest request, string id) =>
 
-            PacketUtils.validate_and_reply(request, "countryCodes/delete", async (packet) => {
+            await PacketUtils.validate_and_reply(request, "countryCodes/delete", async (packet) => {
 
-                var result = Controller.ControllerManager.controller.deleteCountryCode(packet.access_token, id);
-                return await Task.FromResult(PacketUtils.send_packet(result));
+                var result = await API.controller!.delete_country_code(packet.access_token, id);
+                return PacketUtils.send_packet(result);
 
             })
 
         );
 
         // PUT /v1.0/countryCodes/{id}
-        app.MapPut("{id}", (HttpRequest request, string id) =>
+        app.MapPut("{id}", async (HttpRequest request, string id) =>
 
-            PacketUtils.validate_and_reply(request, "countryCodes/update", async (packet) => {
+            await PacketUtils.validate_and_reply(request, "countryCodes/update", async (packet) => {
 
-                var result = Controller.ControllerManager.controller.updateCountryCode(
-                    packet.access_token,
-                    id,
-                    (string) packet.body!["name"]
-                    );
-                return await Task.FromResult(PacketUtils.send_packet(result));
+                return PacketUtils.send_packet(await API.controller!.update_country_code(
 
-            })
-
-        );
-
-        // PATCH /v1.0/countryCodes/{id}
-        app.MapPatch("{id}", (HttpRequest request, string id) =>
-
-            PacketUtils.validate_and_reply(request, "countryCodes/patch", async (packet) => {
-
-                var result = Controller.ControllerManager.controller.patchCountryCode(
                     packet.access_token,
                     id,
                     (string?) PacketUtils.get_value(packet.body!,"name")
-                    );
-                return await Task.FromResult(PacketUtils.send_packet(result));
-                
+
+                ));
+
             })
 
         );
@@ -92,4 +94,5 @@ public static class CountryCodeRouters {
         return group;
 
     }
+
 }

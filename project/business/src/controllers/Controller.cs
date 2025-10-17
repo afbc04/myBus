@@ -1,85 +1,125 @@
 using System.Threading;
 using PacketHandlers;
 using Token;
+using Nito.AsyncEx;
+using Pages;
 
 namespace Controller {
 
     public class ControllerManager {
 
-        public static ControllerManager controller = new ControllerManager(); 
+        private readonly AsyncReaderWriterLock _lock;
 
-        private ICountryCodeController _countryCodes;
-
-        private readonly ReaderWriterLockSlim _lock;
+        private CountryCodeController _country_codes;
 
         public ControllerManager() {
             this._lock = new();
-            this._countryCodes = new CountryCodeController();
+            this._country_codes = new CountryCodeController();
         }
 
         /// #################################
         ///           COUNTRY CODES
         /// #################################
-        public SendingPacket createCountryCode(AccessToken? token, string id, string name) {
-            using (new ControllerWriteLock(_lock))
-                return this._countryCodes.createCountryCode(token,id,name);
-        }
+        public async Task<SendingPacket> create_country_code(AccessToken? token, string id, string name) {
 
-        public SendingPacket listCountryCode(AccessToken? token) {
-            using (new ControllerReadLock(_lock))
-                return this._countryCodes.listCountryCode(token);
-        }
+            var controller_lock = await this._lock.WriterLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
+            controller_lock.Dispose();
 
-        public SendingPacket getCountryCode(AccessToken? token, string id) {
-            using (new ControllerReadLock(_lock))
-                return this._countryCodes.getCountryCode(token,id);
-        }
+            try {
 
-        public SendingPacket deleteCountryCode(AccessToken? token, string id) {
-            using (new ControllerWriteLock(_lock))
-                return this._countryCodes.deleteCountryCode(token,id);
-        }
-
-        public SendingPacket updateCountryCode(AccessToken? token, string id, string name) {
-            using (new ControllerWriteLock(_lock))
-                return this._countryCodes.updateCountryCode(token,id,name);
-        }
-
-        public SendingPacket patchCountryCode(AccessToken? token, string id, string? name) {
-            using (new ControllerWriteLock(_lock))
-                return this._countryCodes.patchCountryCode(token,id,name);
-        }
-
-
+                var response = await this._country_codes.create(token,id,name);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
+            }
         
-
-        /// #################################
-        ///           CONTROLLER LOCKS
-        /// #################################
-        private class ControllerWriteLock : IDisposable {
-            private readonly ReaderWriterLockSlim _lock;
-
-            public ControllerWriteLock(ReaderWriterLockSlim _lock) {
-                this._lock = _lock;
-                this._lock.EnterWriteLock();
-            }
-
-            public void Dispose() {
-                _lock.ExitWriteLock();
-            }
         }
 
-        private class ControllerReadLock : IDisposable {
-            private readonly ReaderWriterLockSlim _lock;
+        public async Task<SendingPacket> list_country_code(AccessToken? token, PageInput page) {
 
-            public ControllerReadLock(ReaderWriterLockSlim _lock) {
-                this._lock = _lock;
-                this._lock.EnterReadLock();
+            var controller_lock = await this._lock.ReaderLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.ReaderLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._country_codes.list(token,page);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
+            }
+        
+        }
+
+        public async Task<SendingPacket> clear_country_code(AccessToken? token) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._country_codes.clear(token);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
+            }
+        
+        }
+
+        public async Task<SendingPacket> get_country_code(AccessToken? token, string id) {
+
+            var controller_lock = await this._lock.ReaderLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.ReaderLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._country_codes.get(token,id);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
             }
 
-            public void Dispose() {
-                _lock.ExitReadLock();
+        }
+
+        public async Task<SendingPacket> delete_country_code(AccessToken? token, string id) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._country_codes.delete(token,id);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
             }
+        
+        }
+
+        public async Task<SendingPacket> update_country_code(AccessToken? token, string id, string? name) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._country_codes.update(token,id,name);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
+            }
+        
         }
 
     }

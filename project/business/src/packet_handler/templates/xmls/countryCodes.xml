@@ -15,12 +15,6 @@
 
     <template id="update">
         <body required="true">
-            <i name="name" required="true"/>
-        </body>
-    </template>
-
-    <template id="patch">
-        <body required="true">
             <i name="name"/>
         </body>
     </template>

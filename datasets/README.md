@@ -6,7 +6,7 @@ This directory has some datasets related to this server:
 
 # Importing datasets
 
-**NOTE** : You should be in `datasets/` directory.
+**NOTE** : You should be in `datasets/` directory & SQL Tables must have been created _(API creates the tables in case they dont exist)_
 
 ## Import
 

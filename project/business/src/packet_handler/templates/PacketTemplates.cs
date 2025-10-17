@@ -1,4 +1,5 @@
 using System.Xml.Linq;
+using Serilog;
 
 namespace PacketTemplates {
 
@@ -18,9 +19,11 @@ namespace PacketTemplates {
 
         private static readonly string templates_directory = "src/packet_handler/templates/xmls";
         private static readonly Dictionary<string,TemplateObject> templates = new();
-        public static int templates_loaded {get; private set;} = 0;
 
         public static void load_templates() {
+
+            int templates_loaded = 0;
+            int templated_failed = 0;
 
             foreach (var file in Directory.GetFiles(TemplateLoader.templates_directory, "*.xml")) {
 
@@ -43,9 +46,14 @@ namespace PacketTemplates {
 
                     }
                 }
-                catch {}
+                catch {
+                    Log.Warning($"Couldn't load \"{file}\" template");
+                    templated_failed++;
+                }
 
             }
+
+            Log.Information($"Request templates were loaded ( {templates_loaded} loaded | {templated_failed} failed )");
 
         }
 

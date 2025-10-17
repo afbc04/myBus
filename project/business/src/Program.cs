@@ -1,13 +1,27 @@
-var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://*:80");
+using Serilog;
 
-ProgramHandler.load_templates();
-//Controller.ControllerManager.
+public class Program {
 
-var app = builder.Build();
+    public static void Main(string[] args) {
 
-app.Use(ProgramHandler.log_requests);
+        if (API.init() == true) {
 
-v1Routers.Register(app);
+            Log.Information("API was successfully started");
 
-app.Run();
+            var builder = WebApplication.CreateBuilder(args);
+            builder.WebHost.UseUrls("http://*:80");
+
+            var app = builder.Build();
+            app.Use(ProgramHandler.log_requests);
+            v1Routers.Register(app);
+
+            app.Run();
+
+        }
+        else {
+            Log.Error("API couldn't start");
+        }
+
+    }
+
+}

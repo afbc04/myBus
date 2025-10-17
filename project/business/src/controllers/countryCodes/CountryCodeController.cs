@@ -1,136 +1,126 @@
 using PacketHandlers;
 using Token;
+using Models;
+using Nito.AsyncEx;
+using Pages;
 
 namespace Controller {
 
-    public interface ICountryCodeController {
-        SendingPacket createCountryCode(AccessToken? token, string id, string name);
-        SendingPacket listCountryCode(AccessToken? token);
-        SendingPacket getCountryCode(AccessToken? token, string id);
-        SendingPacket deleteCountryCode(AccessToken? token, string id);
-        SendingPacket updateCountryCode(AccessToken? token, string id, string name);
-        SendingPacket patchCountryCode(AccessToken? token, string id, string? name);
-    }
+    public class CountryCodeController {
 
-    public class CountryCodeController : ICountryCodeController {
-
-        private Dictionary<string,CountryCode> ccdict;
+        public readonly AsyncReaderWriterLock Lock;
+        private CountryCodeModel _model;
+        private long _count;
 
         public CountryCodeController() {
-            this.ccdict = new();
+            this.Lock = new();
+            this._model = new CountryCodeModel();
+            this._count = this._model.size().Result;
         }
 
-        public SendingPacket createCountryCode(AccessToken? token, string id, string name) {
+        // ------------------ public methods ------------------
+
+        public async Task<SendingPacket> create(AccessToken? token, string id, string name) {
 
             id = id.ToUpper();
 
-            if (ccdict.ContainsKey(id))
-                return new PacketFail("ID is duplicated",422,null);
+            CountryCode? valid_country_code = validate_country_code(id, name);
+            if (valid_country_code == null)
+                return new PacketFail(417);
 
-            (bool is_cc_valid, CountryCode? cc, PacketFail? packet_in_case_of_fail) = _validate_country_code(id, name);
-            if (is_cc_valid == false)
-                return packet_in_case_of_fail!;
+            bool inserted_country_code = await this._model.insert(valid_country_code!);
+            if (inserted_country_code == false)
+                return new PacketFail(422);
+
+            this._count++;
+            return new PacketSuccess(201, valid_country_code!.to_json());
+
+        }
+
+        public async Task<SendingPacket> list(AccessToken? token, PageInput page_input) {
+
+            var list = await this._model.values(page_input);
+            var country_code_list = list.Select(cc => (object) cc.to_json()).ToList();
+            var page_output = new PageOutput(page_input,this._count,country_code_list);
             
-            ccdict[id] = cc!;
-
-            return new PacketSuccess(201,cc!.to_json());
+            return new PacketSuccess(200, page_output.to_json());
 
         }
 
-        public SendingPacket listCountryCode(AccessToken? token) {
+        public async Task<SendingPacket> clear(AccessToken? token) {
 
-            List<IDictionary<string,object>> list_to_be_send = new();
+            var list = await this._model.clear();
+            var country_code_list = list.Select(cc => (object) cc.to_json()).ToList();
+            this._count = 0;
 
-            foreach (var cc in ccdict.Values) 
-                list_to_be_send.Add(cc.to_json());
-            
-
-            return new PacketSuccess(200,list_to_be_send);
+            return new PacketSuccess(200, country_code_list);
 
         }
 
-        public SendingPacket getCountryCode(AccessToken? token, string id) {
+        public async Task<SendingPacket> get(AccessToken? token, string id) {
+
+            CountryCode? country_code = await this._model.get(id.ToUpper());
+            if (country_code == null)
+                return new PacketFail(404);
+
+            return new PacketSuccess(200, country_code.to_json());
+
+        }
+
+        public async Task<SendingPacket> delete(AccessToken? token, string id) {
 
             id = id.ToUpper();
 
-            if (!ccdict.ContainsKey(id))
+            CountryCode? country_code = await this._model.get(id);
+            if (country_code == null)
                 return new PacketFail(404);
-            else
-                return new PacketSuccess(200,ccdict[id].to_json());
+
+            bool was_deleted = await this._model.delete(id);
+            if (was_deleted == false)
+                return new PacketFail(422);
+
+            this._count--;
+            return new PacketSuccess(200, country_code.to_json());
 
         }
 
-        public SendingPacket deleteCountryCode(AccessToken? token, string id) {
+        public async Task<SendingPacket> update(AccessToken? token, string id, string? name) {
 
             id = id.ToUpper();
 
-            if (!ccdict.ContainsKey(id))
-                return new PacketFail(404);
-            else {
-
-                var deleted_country_code = ccdict[id];
-                ccdict.Remove(id);
-
-                return new PacketSuccess(200,deleted_country_code.to_json());
-            }
-
-        }
-
-        public SendingPacket updateCountryCode(AccessToken? token, string id, string name) {
-
-            id = id.ToUpper();
-
-            if (!ccdict.ContainsKey(id))
+            CountryCode? country_code = await this._model.get(id);
+            if (country_code == null)
                 return new PacketFail(404);
 
-            (bool is_cc_valid, CountryCode? cc, PacketFail? packet_in_case_of_fail) = _validate_country_code(id, name);
-            if (is_cc_valid == false)
-                return packet_in_case_of_fail!;
-            
-            ccdict[id] = cc!;
-
-            return new PacketSuccess(200,cc!.to_json());
-
-        }
-
-        public SendingPacket patchCountryCode(AccessToken? token, string id, string? name) {
-
-            id = id.ToUpper();
-
-            if (!ccdict.ContainsKey(id))
-                return new PacketFail(404);
-
-            var updating_cc = ccdict[id];
-
-            (bool is_cc_valid, CountryCode? cc, PacketFail? packet_in_case_of_fail) = _validate_country_code(
-                id,
-                name ?? updating_cc.name
+            CountryCode? valid_country_code = validate_country_code(
+                id, 
+                name ?? country_code.name
                 );
-            if (is_cc_valid == false)
-                return packet_in_case_of_fail!;
-            
-            ccdict[id] = cc!;
+            if (valid_country_code == null)
+                return new PacketFail(417);
 
-            return new PacketSuccess(200,cc!.to_json());
+            bool updated_country_code = await this._model.update(valid_country_code!);
+            if (updated_country_code == false)
+                return new PacketFail(404);
 
-        }   
-
-
-        private (bool, CountryCode?, PacketFail?) _validate_country_code(
-            string ID,
-            string? name
-        ) {
-
-            if (ID.All(char.IsLetter) == false) return (false, null, new PacketFail("ID must contain only letters",417));
-            if (ID.Length != CountryCode.idLength) return (false, null, new PacketFail($"ID must be composed by {CountryCode.idLength} letters",417));
-
-            if (name == null) return (false, null, new PacketFail("Name field is not present",417));
-            if (name.Length > CountryCode.nameMaxLength) return (false, null, new PacketFail($"Name is too bigger. Expected maximum {CountryCode.nameMaxLength} characters, received {name.Length}",417));
-
-            return (true, new CountryCode(ID, name), null);
+            return new PacketSuccess(200, valid_country_code!.to_json());
 
         }
 
-    }
+        // ------------------ private helper ------------------
 
+        private CountryCode? validate_country_code(string id, string? name) {
+
+            if (id.All(char.IsLetter) == false || 
+                id.Length != CountryCode.idLength ||
+                name is null ||
+                name.Length > CountryCode.nameMaxLength
+                )
+                return null;
+
+
+            return new CountryCode(id.ToUpper(), name);
+
+        }
+    }
 }
