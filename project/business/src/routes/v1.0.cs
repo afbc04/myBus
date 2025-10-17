@@ -7,6 +7,7 @@ public static class v1Routers {
         var api = app.MapGroup("/v1.0");
 
         api.TokenRoutersMapping();
+        api.CountryCodeRoutersMapping();
 
     }
 

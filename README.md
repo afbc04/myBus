@@ -12,25 +12,58 @@
 
 ### Information
 
-Project is divided into 2 services:
-- **[Backend](backend/)** : API & Database
-- **[Frontend](frontend/)** : Interface
+Project is divided into 3 services:
+- **[Data Base](project/database/)** : Database _(PostgreSQL)_
+- **[Business Logic](project/business/)** : Web API _(C#)_
+- **[User Interface](project/interface/)** : Interfaces & Frontend _(Angular)_
 
-# Instalation - Database
+# Instalation
+
+### Project Directory
+
+    cd project/
 
 ### Environment Variables
 
-    touch database/.env
+    touch .env
 
 Variables should have this format:
 
 ```
-POSTGRES_USER= [user of database]
-POSTGRES_PASSWORD= [password of user of database]
-POSTGRES_DB= [name of database]
+JWT_TOKEN_SECRET= [secret key to encript JWT tokens]
+API_PORT= [WebAPI port]
+POSTGRES_USER= [Database User]
+POSTGRES_PASSWORD= [Database Password]
+POSTGRES_PORT= [Database port]
 ```
 
-# Start local development environment
+### Building
+
+    docker compose build
+
+### Initialization
+
+1. Initialize all services
+
+        docker compose up -d
+
+2. Initialize each service
+
+        docker compose up database  # Data Base
+
+        docker compose up api       # Business Logic
+
+### Uninstall
+
+    docker compose down
+
+# Usage
+
+### Database
+
+    docker compose up database    # In case database is not running
+    docker exec -it mybus-database psql -U [database user] -d myBus
+
 # Useful Tips
 # References:
 

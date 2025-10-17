@@ -40,7 +40,7 @@ namespace Token {
 
         public static CreatedToken create_access_token(string username, string level) {
 
-            string secret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? TokenHandler.default_secret;
+            string secret = Environment.GetEnvironmentVariable("JWT_TOKEN_SECRET") ?? TokenHandler.default_secret;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
             var claims = new[] {
@@ -65,7 +65,7 @@ namespace Token {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             var token_handler = new JwtSecurityTokenHandler();
 
-            string secret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? TokenHandler.default_secret;
+            string secret = Environment.GetEnvironmentVariable("JWT_TOKEN_SECRET") ?? TokenHandler.default_secret;
             var key = Encoding.UTF8.GetBytes(secret);
 
             try {

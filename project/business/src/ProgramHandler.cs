@@ -1,11 +1,14 @@
 using PacketTemplates;
+using Serilog;
 
 public class ProgramHandler {
 
-    public static void load_templates() {
+    public static void start_logger() {
 
-        PacketTemplates.TemplateLoader.load_templates();
-        Console.WriteLine($"{TemplateLoader.templates_loaded} templates were loaded!");
+        Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
     }
 

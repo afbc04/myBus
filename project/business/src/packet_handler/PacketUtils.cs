@@ -30,14 +30,29 @@ namespace PacketHandlers {
         private static IResult _send_error(PacketFail packet) {
             
             var json = new Dictionary<string, object>();
-            json["error"] = packet.error_message;
+
+            if (packet.error_message != null)
+                json["error"] = packet.error_message;
 
             if (packet.extra_message is not null) {
                 foreach (var entry in packet.extra_message)
                     json[entry.Key] = entry.Value;
             }
 
-            return Results.Json(json,statusCode: packet.status_code);
+            if (packet.error_message == null)
+                return Results.StatusCode(packet.status_code);
+            else
+                return Results.Json(json,statusCode: packet.status_code);
+
+        }
+
+        public static object? get_value(IDictionary<string,object> dict, string key) {
+
+            if (dict.ContainsKey(key))
+                return dict[key];
+            else
+                return null;
+
         }
 
     }

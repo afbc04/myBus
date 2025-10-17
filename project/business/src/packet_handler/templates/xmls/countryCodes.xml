@@ -1,0 +1,22 @@
+<templates>
+
+    <template id="create">
+        <body required="true">
+            <i name="id" required="true"/>
+            <i name="name" required="true"/>
+        </body>
+    </template>
+
+    <template id="get">
+    </template>
+
+    <template id="delete">
+    </template>
+
+    <template id="update">
+        <body required="true">
+            <i name="name"/>
+        </body>
+    </template>
+
+</templates>
