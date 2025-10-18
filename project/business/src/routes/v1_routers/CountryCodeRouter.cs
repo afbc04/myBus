@@ -17,24 +17,22 @@ public static class CountryCodeRouters {
                 return PacketUtils.send_packet(await API.controller!.create_country_code(
 
                     packet.access_token,
-                    (string) packet.body!["id"],
-                    (string) packet.body!["name"]
+                    new CountryCodeRequestWrapper((string) packet.body!["id"] ,packet.body!)
                     
                     ));
             })
 
         );
 
+
         // GET /v1.0/countryCodes
         app.MapGet("", async (HttpRequest request) => {
-
-            PageInput page = new(request);
 
             return await PacketUtils.validate_and_reply(request, "countryCodes/get", async (packet) => {
                 return PacketUtils.send_packet(await API.controller!.list_country_code(
 
                     packet.access_token,
-                    page
+                    new PageRequest(request)
 
                     ));
             });
@@ -83,7 +81,7 @@ public static class CountryCodeRouters {
 
                     packet.access_token,
                     id,
-                    (string?) PacketUtils.get_value(packet.body!,"name")
+                    new CountryCodeRequestWrapper(id,packet.body!)
 
                 ));
 

@@ -14,6 +14,7 @@ public class Program {
             var app = builder.Build();
             app.Use(ProgramHandler.log_requests);
             v1Routers.Register(app);
+            DocsRouter.Register(app);
 
             app.Run();
 

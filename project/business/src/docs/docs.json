@@ -1,0 +1,430 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "myBus API",
+        "description": "API of myBus project",
+        "version": "1.0",
+        "contact": {
+          "name": "afbc04",
+          "url": "https://github.com/afbc04/myBus"
+        }
+    },
+    "security": [
+      {
+        "TokenNeeded": []
+      }
+    ],
+    "tags": [
+      {
+        "name": "Authentication v1.0",
+        "description": "All about tokens, which are necessary to use the system"
+      },
+      {
+        "name": "Country Codes v1.0",
+        "description": "All about country codes"
+      },
+      {
+        "name": "Bus Passes v1.0",
+        "description": "All about bus passes"
+      }
+    ],
+    "paths": {
+        "/v1.0/token": {
+            "post": {
+                "tags": ["Authentication v1.0"],
+                "summary": "New Token",
+                "description": "Creates a token. Required to use the API",
+                "operationId": "post_token_v1_0",
+                "security": [],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/GettingToken"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token was requested",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/TokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't get a token" }
+                }
+            }
+        },
+        "/v1.0/countryCodes": {
+            "get": {
+                "tags": ["Country Codes v1.0"],
+                "summary": "List Country Codes",
+                "operationId": "list_country_codes_v1_0",
+                "responses": {
+                    "200": {
+                        "description": "Country Codes listed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/PageCountryCode"
+                                  }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Need token or not enough permissions" }
+                }
+            },
+            "post": {
+                "tags": ["Country Codes v1.0"],
+                "summary": "Create Country Code",
+                "operationId": "create_country_code_v1_0",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CreatingCountryCode"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Country Code Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/CountryCode"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Need token or not enough permissions" },
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't create a country code" }
+                }
+            },
+            "delete": {
+                "tags": ["Country Codes v1.0"],
+                "summary": "Clear All Country Codes",
+                "operationId": "clear_country_code_v1_0",
+                "responses": {
+                    "200": {
+                        "description": "Country Code Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/CountryCode"
+                                  }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Need token or not enough permissions" }
+                }
+            }
+        },
+        "/v1.0/countryCodes/{id}": {
+            "get": {
+                "tags": ["Country Codes v1.0"],
+                "summary": "Get Country Code",
+                "operationId": "get_country_code_v1_0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "ID of Country Code"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Country Code Information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/CountryCode"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Need token or not enough permissions" },
+                    "404": { "description": "Country Code does not exists"},
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't get country code" }
+                }
+            },
+            "delete": {
+                "tags": ["Country Codes v1.0"],
+                "summary": "Delete Country Code",
+                "operationId": "delete_country_code_v1_0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "ID of Country Code"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Country Code removed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/CountryCode"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Need token or not enough permissions" },
+                    "404": { "description": "Country Code does not exists"},
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't delete country code" }
+                }
+            },
+            "put": {
+                "tags": ["Country Codes v1.0"],
+                "summary": "Update Country Code",
+                "operationId": "update_country_code_v1_0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "ID of Country Code"
+                        }
+                    }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UpdatingCountryCode"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Country Code updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/CountryCode"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Need token or not enough permissions" },
+                    "404": { "description": "Country Code does not exists"},
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't update country code" }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+          "TokenNeeded": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+          }
+        },
+        "schemas" : {
+          "GettingToken" : {
+            "type": "object",
+            "required" : ["username","password","instance","line"],
+            "properties": {
+              "username": {
+                "type": "string",
+                "description": "Username used in ERP",
+                "example": "your_username"
+              },
+              "password": {
+                "type": "string",
+                "description": "Password of ERP user",
+                "example": "your_password"
+              },
+              "instance": {
+                "type": "string",
+                "description": "Instance used in ERP",
+                "example": "your_instance"
+              },
+              "line": {
+                "enum": ["professional", "executive"],
+                "description": "Line used in ERP",
+                "example": "your_line"
+              },
+              "company": {
+                "type": "string",
+                "description": "Company code used in ERP (highly recommended)",
+                "example": "your_company"
+              },
+              "token": {
+                "type": "string",
+                "description": "Token you want to be recycle",
+                "example": "Adjf543..."
+              }
+            }
+          },
+          "TokenResponse" : {
+            "type": "object",
+            "properties": {
+              "access_token": {
+                "type": "string",
+                "description": "Token ready to be used",
+                "example": "HJVvhg34..."
+              },
+              "token_type": {
+                "type": "string",
+                "description": "Type of Authentication",
+                "example": "Bearer"
+              },
+              "expires_in": {
+                "type": "integer",
+                "description": "Seconds until token given expires",
+                "example": 1199
+              }
+            }
+          },
+          "Page": {
+            "type": "object",
+            "properties": {
+                "totalElements": { 
+                    "type": "integer",
+                    "description": "How many elements requested exists",
+                    "example": 15 
+                },
+                "pageElements": { 
+                    "type": "integer", 
+                    "description": "How many elements are in this page",
+                    "example": 10
+                },
+                "page": { 
+                    "type": "integer", 
+                    "description": "Number of page",
+                    "example": 1 
+                },
+                "limit": { 
+                    "type": "integer",
+                    "description": "Maximum elements per page",
+                    "example": 10 
+                },
+                "totalPages": { 
+                    "type": "integer", 
+                    "description": "How many pages exists",
+                    "example": 2 
+                },
+                "empty": { 
+                    "type": "boolean", 
+                    "description": "Is this page empty?",
+                    "example": false 
+                },
+                "all": { 
+                    "type": "boolean", 
+                    "description": "Are all elements in this page?",
+                    "example": false 
+                },
+                "firstPage": { 
+                    "type": "boolean", 
+                    "description": "Is this page the first page?",
+                    "example": true 
+                },
+                "lastPage": { 
+                    "type": "boolean", 
+                    "description": "Is this page the last page?",
+                    "example": false 
+                }
+            }
+          },
+          "CountryCode" : {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of Country",
+                "example": "PRT"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of Country",
+                "example": "Portugal"
+              }
+            }
+          },
+          "PageCountryCode": {
+            "allOf": [
+                { 
+                    "$ref": "#/components/schemas/Page" 
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "array",
+                            "items": { 
+                                "$ref": "#/components/schemas/CountryCode" 
+                            }
+                        }
+                    }
+                }
+            ]
+          },
+          "CreatingCountryCode" : {
+            "type": "object",
+            "required" : ["id","name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of Country",
+                "example": "PRT"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of Country",
+                "example": "Portugal"
+              }
+            }
+          },
+          "UpdatingCountryCode" : {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of Country",
+                "example": "Spain"
+              }
+            }
+          }
+        }
+      },
+    "servers": [
+        {
+            "url": "http://localhost:25000",
+            "description": "API"
+        }
+    ]
+}

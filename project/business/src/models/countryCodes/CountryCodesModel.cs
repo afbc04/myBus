@@ -129,7 +129,8 @@ namespace Models {
         public async Task<IList<CountryCode>> values(PageInput page) {
 
             string sql = "SELECT id, name FROM CountryCodes";
-            sql += page.get_sql_filtering();
+            sql += page.get_sql_listing();
+            sql += ";";
 
             return await ModelsManager.execute_query(sql, async cmd => {
 

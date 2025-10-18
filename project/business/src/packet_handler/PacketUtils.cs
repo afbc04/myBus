@@ -55,6 +55,12 @@ namespace PacketHandlers {
 
         }
 
+        public static string? get_value_from_query(HttpRequest request, string key) {
+
+            var value = request.Query[key].ToString();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+
     }
 
 }
