@@ -22,7 +22,7 @@ namespace Controller {
         /// #################################
         ///           COUNTRY CODES
         /// #################################
-        public async Task<SendingPacket> create_country_code(AccessToken? token, CountryCodeRequestWrapper request_request) {
+        public async Task<SendingPacket> create_country_code(AccessToken? token, CountryCodeRequestWrapper request_wrapper) {
 
             var controller_lock = await this._lock.WriterLockAsync();
             var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
@@ -30,7 +30,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._country_codes.create(token,request_request);
+                var response = await this._country_codes.create(token,request_wrapper);
                 return response;
                 
             } finally {
@@ -107,7 +107,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> update_country_code(AccessToken? token, string id, CountryCodeRequestWrapper request_request) {
+        public async Task<SendingPacket> update_country_code(AccessToken? token, string id, CountryCodeRequestWrapper request_wrapper) {
 
             var controller_lock = await this._lock.WriterLockAsync();
             var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
@@ -115,7 +115,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._country_codes.update(token,id,request_request);
+                var response = await this._country_codes.update(token,id,request_wrapper);
                 return response;
                 
             } finally {
@@ -127,7 +127,7 @@ namespace Controller {
         /// #################################
         ///           BUS PASSES
         /// #################################
-        public async Task<SendingPacket> create_bus_pass(AccessToken? token, string id, double discount, long locality_level, long duration, bool? is_active) {
+        public async Task<SendingPacket> create_bus_pass(AccessToken? token, BusPassRequestWrapper request_wrapper) {
 
             var controller_lock = await this._lock.WriterLockAsync();
             var bus_pass_manager_lock = await this._bus_passes.Lock.WriterLockAsync();
@@ -135,7 +135,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._bus_passes.create(token,id,discount,locality_level,duration,is_active);
+                var response = await this._bus_passes.create(token,request_wrapper);
                 return response;
                 
             } finally {
@@ -144,7 +144,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> list_bus_pass(AccessToken? token, PageInput page) {
+        public async Task<SendingPacket> list_bus_pass(AccessToken? token, PageRequest page) {
 
             var controller_lock = await this._lock.ReaderLockAsync();
             var bus_pass_manager_lock = await this._bus_passes.Lock.ReaderLockAsync();
@@ -212,7 +212,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> update_bus_pass(AccessToken? token, string id, double? discount, long? locality_level, long? duration, bool? is_active) {
+        public async Task<SendingPacket> update_bus_pass(AccessToken? token, string id, BusPassRequestWrapper request_wrapper) {
 
             var controller_lock = await this._lock.WriterLockAsync();
             var bus_pass_manager_lock = await this._bus_passes.Lock.WriterLockAsync();
@@ -220,7 +220,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._bus_passes.update(token,id,discount,locality_level,duration,is_active);
+                var response = await this._bus_passes.update(token,id,request_wrapper);
                 return response;
                 
             } finally {

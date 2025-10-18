@@ -6,7 +6,7 @@
             <i name="discount" required="true" datatype="float"/>
             <i name="localityLevel" required="true" datatype="integer"/>
             <i name="duration" required="true" datatype="integer"/>
-            <i name="isActive" datatype="bool"/>
+            <i name="active" datatype="bool"/>
         </body>
     </template>
 
@@ -21,7 +21,7 @@
             <i name="discount" datatype="float"/>
             <i name="localityLevel" datatype="integer"/>
             <i name="duration" datatype="integer"/>
-            <i name="isActive" datatype="bool"/>
+            <i name="active" datatype="bool"/>
         </body>
     </template>
 
