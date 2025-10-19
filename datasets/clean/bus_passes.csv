@@ -1,0 +1,7 @@
+id,discount,localityLevel,duration,active
+RGL,50,2,30,true
+BSC,20,3,30,false
+TVL,40,3,30,true
+CIT,60,1,30,true
+PRE,80,2,10,true
+VIP,100,3,3,false

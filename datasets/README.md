@@ -20,3 +20,8 @@ This directory has some datasets related to this server:
 
     DELETE FROM CountryCodes;
     \copy CountryCodes(id, name) FROM '/tmp/country_codes.csv' DELIMITER ',' CSV HEADER;
+
+##### Bus Passes
+
+    DELETE FROM BusPasses;
+    \copy BusPasses(id, discount, localityLevel, duration, isActive) FROM '/tmp/bus_passes.csv' DELIMITER ',' CSV HEADER;

@@ -55,6 +55,21 @@ namespace PacketHandlers {
 
         }
 
+        public static double? get_value_double(IDictionary<string,object> dict, string key) {
+
+            if (dict.ContainsKey(key))
+                return Convert.ToDouble(dict[key]);
+            else
+                return null;
+
+        }
+
+        public static string? get_value_from_query(HttpRequest request, string key) {
+
+            var value = request.Query[key].ToString();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+
     }
 
 }
