@@ -20,7 +20,7 @@ public class API {
 
         }
         catch (Exception ex) {
-            Log.Error(ex.StackTrace);
+            Log.Error(ex.StackTrace!);
             return false;
         }
 

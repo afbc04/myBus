@@ -10,33 +10,13 @@ public static class TokenRouters {
         var app = group.MapGroup("/token").AllowAnonymous();
 
         // POST /v1.0/token
-        app.MapPost("", (HttpRequest request) =>
+        app.MapPost("", async (HttpRequest request) =>
 
-            PacketUtils.validate_and_reply(request, "token/get", async (packet) => {
-
-                CreatedToken created_token = Token.TokenHandler.create_access_token((string) packet.body!["username"],"admin");
-
-                var response = new Dictionary<string, object> {
-                    ["access_token"] = created_token.access_token,
-                    ["expires_in"] = created_token.expires_in,
-                    ["type"] = created_token.token_type
-                };
-
-                return await Task.FromResult(PacketUtils.send_packet(new PacketSuccess(200,response)));
-
+            await PacketUtils.validate_and_reply(request, "token/create", async (packet) => {
+                return PacketUtils.send_packet(await API.controller!.create_token(new TokenRequestWrapper( packet.body!)));
             })
 
         );
-
-/*
-        auth.MapGet("/secret", (HttpRequest request) =>
-
-            PacketUtils.validate_and_reply(request, "token/get2", async (packet) => {
-                return Results.Ok(new { message = "Você acessou um endpoint protegido!" });
-            })
-
-        );*/
-
 
         return group;
 

@@ -10,6 +10,7 @@ namespace Models {
             await ModelTableCreator.bus_passes();
             await ModelTableCreator.users();
             await ModelTableCreator.users_view();
+            await ModelTableCreator.token_view();
 
         }
 

@@ -12,12 +12,14 @@ namespace Controller {
         private CountryCodeController _country_codes;
         private BusPassController _bus_passes;
         private UserController _users;
+        private TokenController _tokens;
 
         public ControllerManager() {
             this._lock = new();
             this._country_codes = new CountryCodeController();
             this._bus_passes = new BusPassController();
             this._users = new UserController();
+            this._tokens = new TokenController();
         }
 
         /// #################################
@@ -345,6 +347,26 @@ namespace Controller {
             } finally {
                 country_code_manager_lock.Dispose();
                 user_manager_lock.Dispose();
+            }
+        
+        }
+
+        /// #################################
+        ///           TOKENS
+        /// #################################
+        public async Task<SendingPacket> create_token(TokenRequestWrapper request_wrapper) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var token_manager_lock = await this._tokens.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._tokens.create(request_wrapper);
+                return response;
+                
+            } finally {
+                token_manager_lock.Dispose();
             }
         
         }

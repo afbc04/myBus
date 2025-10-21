@@ -124,6 +124,21 @@ namespace Models {
 
         }
 
+        public static async Task token_view() {
+
+            await using var conn = new NpgsqlConnection(ModelsManager.connection_string);
+            await conn.OpenAsync();
+
+            string view_to_be_created = @"
+                CREATE OR REPLACE VIEW VAuthUsers                                                                                                                                                                               
+                    AS SELECT id, password, salt, level, inactiveDate FROM Users;
+            ";
+
+            await using var cmd = new NpgsqlCommand(view_to_be_created, conn);
+            await cmd.ExecuteNonQueryAsync();
+
+        }
+
     }
 
 }

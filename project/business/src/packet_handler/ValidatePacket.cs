@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using PacketTemplates;
 using Token;
+using Controller;
 
 namespace PacketHandlers {
 
@@ -119,7 +120,7 @@ namespace PacketHandlers {
                 string? token = validate_packet_auth(request, template.auth);
                 if (token != null) {
 
-                    (bool is_token_valid, extracted_token, PacketFail? invalid_auth) = Token.TokenHandler.validate(token!);
+                    (bool is_token_valid, extracted_token, PacketFail? invalid_auth) = TokenController.validate_and_get_token(token!);
                     if (is_token_valid == false)
                         throw new ValidatePacketException(invalid_auth!);
 
