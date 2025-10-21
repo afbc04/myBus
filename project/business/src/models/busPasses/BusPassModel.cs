@@ -5,9 +5,7 @@ namespace Models {
 
     public class BusPassModel {
 
-        public BusPassModel() {
-            ModelTableCreator.bus_passes().Wait();
-        }
+        public BusPassModel() {}
 
         public async Task<IList<BusPass>> clear() {
 

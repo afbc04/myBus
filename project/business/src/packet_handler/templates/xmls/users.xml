@@ -1,0 +1,36 @@
+<templates>
+
+    <template id="create">
+        <body required="true">
+            <i name="id" required="true"/>
+            <i name="password" required="true"/>
+            <i name="name"/>
+            <i name="email"/>
+            <i name="birthDate"/>
+            <i name="sex"/>
+            <i name="countryCode"/>
+            <i name="public" datatype="bool"/>
+            <i name="disablePerson" datatype="bool"/>
+        </body>
+    </template>
+
+    <template id="get">
+    </template>
+
+    <template id="delete">
+    </template>
+
+    <template id="update">
+        <body required="true">
+            <i name="password"/>
+            <i name="name"/>
+            <i name="email"/>
+            <i name="birthDate"/>
+            <i name="sex"/>
+            <i name="countryCode"/>
+            <i name="public" datatype="bool"/>
+            <i name="disablePerson" datatype="bool"/>
+        </body>
+    </template>
+
+</templates>

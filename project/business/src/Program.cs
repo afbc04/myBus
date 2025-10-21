@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using Serilog;
 
 public class Program {
 
-    public static void Main(string[] args) {
+    public static async Task Main(string[] args) {
 
-        if (API.init() == true) {
+        if (await API.init() == true) {
 
             Log.Information("API was successfully started");
 

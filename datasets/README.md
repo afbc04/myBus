@@ -24,4 +24,10 @@ This directory has some datasets related to this server:
 ##### Bus Passes
 
     DELETE FROM BusPasses;
-    \copy BusPasses(id, discount, localityLevel, duration, isActive) FROM '/tmp/bus_passes.csv' DELIMITER ',' CSV HEADER;
+    \copy BusPasses(id, discount, localityLevel, duration, active) FROM '/tmp/bus_passes.csv' DELIMITER ',' CSV HEADER;
+
+##### Users
+
+    DELETE FROM Users;
+    \copy Users(id,name,level,adminSinceDate,inactiveDate,inactiveAccountUser,email,birthDate,sex,countryCode,accountCreation,public,disablePerson,busPassID,busPassValidFrom,busPassValidUntil,salt,password) FROM '/tmp/users.csv' DELIMITER ',' CSV HEADER;
+

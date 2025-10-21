@@ -1,4 +1,3 @@
-using System.Threading;
 using PacketHandlers;
 using Token;
 using Nito.AsyncEx;
@@ -12,11 +11,13 @@ namespace Controller {
 
         private CountryCodeController _country_codes;
         private BusPassController _bus_passes;
+        private UserController _users;
 
         public ControllerManager() {
             this._lock = new();
             this._country_codes = new CountryCodeController();
             this._bus_passes = new BusPassController();
+            this._users = new UserController();
         }
 
         /// #################################
@@ -225,6 +226,125 @@ namespace Controller {
                 
             } finally {
                 bus_pass_manager_lock.Dispose();
+            }
+        
+        }
+
+        /// #################################
+        ///           USERS
+        /// #################################
+        public async Task<SendingPacket> create_user(AccessToken? token, UserRequestWrapper request_wrapper) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
+            var user_manager_lock = await this._users.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                bool does_country_code_exists = false;
+
+                if (request_wrapper.country_code_id != null)
+                    does_country_code_exists = await this._country_codes.contains(token,request_wrapper.country_code_id);
+
+                var response = await this._users.create(token,does_country_code_exists,request_wrapper);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
+                user_manager_lock.Dispose();
+            }
+        
+        }
+
+        public async Task<SendingPacket> list_user(AccessToken? token, PageRequest page) {
+
+            var controller_lock = await this._lock.ReaderLockAsync();
+            var user_manager_lock = await this._users.Lock.ReaderLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._users.list(token,page);
+                return response;
+                
+            } finally {
+                user_manager_lock.Dispose();
+            }
+        
+        }
+
+        public async Task<SendingPacket> clear_user(AccessToken? token) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var user_manager_lock = await this._users.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._users.clear(token);
+                return response;
+                
+            } finally {
+                user_manager_lock.Dispose();
+            }
+        
+        }
+
+        public async Task<SendingPacket> get_user(AccessToken? token, string id) {
+
+            var controller_lock = await this._lock.ReaderLockAsync();
+            var user_manager_lock = await this._users.Lock.ReaderLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._users.get(token,id);
+                return response;
+                
+            } finally {
+                user_manager_lock.Dispose();
+            }
+
+        }
+
+        public async Task<SendingPacket> delete_user(AccessToken? token, string id) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var user_manager_lock = await this._users.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                var response = await this._users.delete(token,id);
+                return response;
+                
+            } finally {
+                user_manager_lock.Dispose();
+            }
+        
+        }
+
+        public async Task<SendingPacket> update_user(AccessToken? token, string id, UserRequestWrapper request_wrapper) {
+
+            var controller_lock = await this._lock.WriterLockAsync();
+            var country_code_manager_lock = await this._country_codes.Lock.WriterLockAsync();
+            var user_manager_lock = await this._users.Lock.WriterLockAsync();
+            controller_lock.Dispose();
+
+            try {
+
+                bool does_country_code_exists = false;
+
+                if (request_wrapper.country_code_id != null)
+                    does_country_code_exists = await this._country_codes.contains(token,request_wrapper.country_code_id);
+
+                var response = await this._users.update(token,id,request_wrapper,does_country_code_exists);
+                return response;
+                
+            } finally {
+                country_code_manager_lock.Dispose();
+                user_manager_lock.Dispose();
             }
         
         }

@@ -5,9 +5,7 @@ namespace Models {
 
     public class CountryCodeModel {
 
-        public CountryCodeModel() {
-            ModelTableCreator.country_codes().Wait();
-        }
+        public CountryCodeModel() {}
 
         public async Task<IList<CountryCode>> clear() {
 

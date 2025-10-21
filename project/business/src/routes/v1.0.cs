@@ -9,6 +9,7 @@ public static class v1Routers {
         api.TokenRoutersMapping();
         api.CountryCodeRoutersMapping();
         api.BusPassRoutersMapping();
+        api.UserRoutersMapping();
 
     }
 
