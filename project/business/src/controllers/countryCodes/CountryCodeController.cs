@@ -18,9 +18,14 @@ namespace Controller {
             this._count = this._model.size().Result;
         }
 
-        // ------------------ public methods ------------------
+        /// #################################
+        ///           PUBLIC METHODS
+        /// #################################
 
         public async Task<SendingPacket> create(AccessToken? token, CountryCodeRequestWrapper request_wrapper) {
+
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can create country codes",403);
 
             var error_lists = validate_country_code(request_wrapper);
             if (error_lists.Count() > 0)
@@ -60,6 +65,9 @@ namespace Controller {
 
         public async Task<SendingPacket> clear(AccessToken? token) {
 
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can create country codes",403);
+
             var list = await this._model.clear();
             var country_code_list = list.Select(cc => (object) cc.to_json()).ToList();
             this._count = 0;
@@ -84,6 +92,9 @@ namespace Controller {
 
         public async Task<SendingPacket> delete(AccessToken? token, string id) {
 
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can create country codes",403);
+
             id = id.ToUpper();
 
             CountryCode? country_code = await this._model.get(id);
@@ -100,6 +111,9 @@ namespace Controller {
         }
 
         public async Task<SendingPacket> update(AccessToken? token, string id, CountryCodeRequestWrapper request_wrapper) {
+
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can create country codes",403);
 
             id = id.ToUpper();
 
@@ -123,7 +137,9 @@ namespace Controller {
 
         }
 
-        // ------------------ private helper ------------------
+        /// #################################
+        ///           PRIVATE METHODS
+        /// #################################
 
         private IList<string> validate_country_code(CountryCodeRequestWrapper request) {
 
