@@ -1,6 +1,7 @@
 <templates>
 
     <template id="create">
+        <auth required="true"/>
         <body required="true">
             <i name="id" required="true"/>
             <i name="name" required="true"/>
@@ -8,12 +9,15 @@
     </template>
 
     <template id="get">
+        <auth />
     </template>
 
     <template id="delete">
+        <auth required="true"/>
     </template>
 
     <template id="update">
+        <auth required="true"/>
         <body required="true">
             <i name="name"/>
         </body>
