@@ -2,7 +2,7 @@ using Models;
 
 namespace Pages {
 
-    public class PageOutput<T> {
+    public class PageOutput {
 
         public long total_elements {get; private set;}
         public long page_elements {get; private set;}
@@ -13,14 +13,14 @@ namespace Pages {
         public bool all {get; private set;}
         public bool first_page {get; private set;}
         public bool last_page {get; private set;}
-        public IList<T> data {get; private set;}
+        public IList<IDictionary<string,object>> data {get; private set;}
 
-        public PageOutput(PageInput page_input,ModelListing<T> listing) {
+        public PageOutput(PageInput page_input,long total_elements, IList<IDictionary<string,object>> data) {
 
-            this.data = listing.list;
+            this.data = data;
             this.page = page_input.page;
             this.limit = page_input.limit;
-            this.total_elements = listing.all_elements;
+            this.total_elements = total_elements;
             this.page_elements = data.Count();
             this.empty = this.page_elements == 0;
             this.all = this.page_elements == this.total_elements;

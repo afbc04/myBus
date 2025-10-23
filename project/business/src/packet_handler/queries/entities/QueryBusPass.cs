@@ -14,7 +14,12 @@ public class QueryBusPass : IQuery {
     }
 
     public string get_sql_filtering() {
-        return "";
+
+        if (query.queries.ContainsKey("localityLevel"))
+            return $" WHERE localityLevel >= {query.queries["localityLevel"]}";
+        else
+            return "";
+
     }
 
     public IList<string> validate() {

@@ -11,12 +11,10 @@ namespace Controller {
 
         public readonly AsyncReaderWriterLock Lock;
         private BusPassModel _model;
-        private long _count;
 
         public BusPassController() {
             this.Lock = new();
             this._model = new BusPassModel();
-            this._count = this._model.size().Result;
         }
 
         /// #################################
@@ -41,31 +39,18 @@ namespace Controller {
             if (inserted_bus_pass == false)
                 return new PacketFail("Failed when inserting bus pass into the database",422);
 
-            this._count++;
             return new PacketSuccess(201, bus_pass_to_be_inserted.to_json());
 
         }
 
-        public async Task<SendingPacket> list(AccessToken? token, QueryBusPass query) {
+        public async Task<SendingPacket> list(AccessToken? token, QueryBusPass querie) {
 
-            return new PacketSuccess(200);
+            var model_list = await this._model.values(querie);
+            var bus_passes_list = model_list.list.Select(cc => cc.to_json()).ToList();
 
-            /*
-            var listing_errors = page_request.validate(new Dictionary<string,string>{
-                {"id", "id"},
-                {"discount", "discount"},
-                {"locality_level", "localityLevel"},
-                {"duration", "duration"},
-                });
-            if (listing_errors.Count() > 0)
-                return new PacketFail("Listing parameters are not valid",417,new Dictionary<string,object>(){ ["errors"] = listing_errors});
-
-            var page_input = page_request.convert();
-            var list = await this._model.values(page_input);
-            var bus_pass_list = list.Select(cc => (object) cc.to_json()).ToList();
-            var page_output = new PageOutput(page_input,this._count,bus_pass_list);
+            var page_output = new PageOutput(querie.get_page(),model_list.all_elements,bus_passes_list);
             
-            return new PacketSuccess(200, page_output.to_json());*/
+            return new PacketSuccess(200, page_output.to_json());
 
         }
 
@@ -76,14 +61,17 @@ namespace Controller {
 
             var list = await this._model.clear();
             var bus_pass_list = list.Select(cc => (object) cc.to_json()).ToList();
-            this._count = 0;
 
             return new PacketSuccess(200, bus_pass_list);
 
         }
 
-        public async Task<bool> contains(AccessToken? token, string id) {
+        public async Task<bool> aux_contains(string id) {
             return await this._model.contains(id);
+        }
+
+        public async Task<long> aux_count() {
+            return await this._model.size();
         }
 
         public async Task<SendingPacket> get(AccessToken? token, string id) {
@@ -113,7 +101,6 @@ namespace Controller {
 
             var bus_pass_deleted = await this._model.get(id);
 
-            this._count--;
             return new PacketSuccess(200, bus_pass_deleted!.to_json());
 
         }

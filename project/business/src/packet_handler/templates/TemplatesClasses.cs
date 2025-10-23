@@ -93,7 +93,7 @@ namespace PacketTemplates {
         }
 
         public void add_sort_opts(HashSet<string> sort_opts) {
-            this.sort_opts = sort_opts;
+            this.sort_opts = sort_opts.Select(s => s.ToLower()).ToHashSet();
         }
 
     }

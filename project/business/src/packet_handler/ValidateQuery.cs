@@ -97,14 +97,15 @@ namespace PacketHandlers {
             var limit = Convert.ToInt64(PacketUtils.get_value(data,"limit") ?? 10);
             var sort = (string?) PacketUtils.get_value(data,"sort");
 
-            Console.WriteLine($"LIMIT {limit}");
-
             if (page <= 0)
                 error_list.Add("Page number must be a positive number");
 
             if (limit <= 0) {
                 error_list.Add("Limit must be a positive number");
-                Console.WriteLine(".-.");
+            }
+
+            if (limit > 100) {
+                error_list.Add("Limit is too high. Maximum is 100");
             }
 
             List<(string,bool)> sort_list = new();

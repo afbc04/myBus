@@ -46,11 +46,9 @@ namespace Controller {
         public async Task<SendingPacket> list(AccessToken? token, QueryCountryCode querie) {
 
             var model_list = await this._model.values(querie);
+            var country_code_list = model_list.list.Select(cc => cc.to_json()).ToList();
 
-            var country_code_list = model_list.list;
-            country_code_list.Select(cc => cc.to_json()).ToList();
-
-            var page_output = new PageOutput<CountryCode>(querie.get_page(),model_list);
+            var page_output = new PageOutput(querie.get_page(),model_list.all_elements,country_code_list);
             
             return new PacketSuccess(200, page_output.to_json());
 

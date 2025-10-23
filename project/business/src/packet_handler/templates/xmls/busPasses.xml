@@ -14,6 +14,13 @@
         <auth />
     </template>
 
+    <template id="list">
+        <auth />
+        <query page="true" sort="id,discount,localityLevel,duration">
+            <q name="localityLevel" datatype="integer" />
+        </query>
+    </template>
+
     <template id="delete">
         <auth required="true"/>
     </template>

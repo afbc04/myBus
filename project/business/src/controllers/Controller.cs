@@ -148,7 +148,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> list_bus_pass(AccessToken? token, QueryBusPass page) {
+        public async Task<SendingPacket> list_bus_pass(AccessToken? token, QueryBusPass querie) {
 
             var controller_lock = await this._lock.ReaderLockAsync();
             var bus_pass_manager_lock = await this._bus_passes.Lock.ReaderLockAsync();
@@ -156,7 +156,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._bus_passes.list(token,page);
+                var response = await this._bus_passes.list(token,querie);
                 return response;
                 
             } finally {

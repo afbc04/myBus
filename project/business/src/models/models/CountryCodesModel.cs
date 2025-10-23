@@ -5,7 +5,7 @@ namespace Models {
 
     public class CountryCodeModel {
 
-        private static CountryCode serialize(NpgsqlDataReader reader) {
+        private static CountryCode _serialize(NpgsqlDataReader reader) {
             return new CountryCode(reader.GetString(0), reader.GetString(1));
         }
 
@@ -26,7 +26,7 @@ namespace Models {
 
                 await using var reader = await cmd_select.ExecuteReaderAsync();
                 while (await reader.ReadAsync()) {
-                    country_code_list.Add(serialize(reader));
+                    country_code_list.Add(_serialize(reader));
                 }
             }
 
@@ -54,7 +54,7 @@ namespace Models {
                 await using var reader = await cmd.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync())
-                    return serialize(reader);
+                    return _serialize(reader);
 
                 return null;
 
@@ -128,7 +128,7 @@ namespace Models {
         }
 
         public async Task<ModelListing<CountryCode>> values(QueryCountryCode querie) {
-            return await ModelUtil.execute_get_list(querie,"CountryCodes","id, name",serialize);
+            return await ModelUtil.execute_get_list(querie,"CountryCodes","id, name",_serialize);
         }
 
         public async Task<IList<string>> keys() {

@@ -57,6 +57,8 @@
                             }
                         }
                     },
+                    "403": { "description": "Password not correct" },
+                    "404": { "description": "User not found" },
                     "417": { "description": "Request is invalid or does not provide the required information" },
                     "422": { "description": "Couldn't get a token" }
                 }
@@ -67,6 +69,17 @@
                 "tags": ["Country Codes v1.0"],
                 "summary": "List Country Codes",
                 "operationId": "list_country_codes_v1_0",
+                "parameters": [
+                  { "$ref": "#/components/parameters/pagePage" },
+                  { "$ref": "#/components/parameters/pageLimit" },
+                  {
+                    "$ref": "#/components/parameters/pageSort",
+                    "schema": {
+                      "type" : "string",
+                      "enum": ["id","name"]
+                    }
+                  }
+                ],
                 "responses": {
                     "200": {
                         "description": "Country Codes listed",
@@ -81,7 +94,7 @@
                             }
                         }
                     },
-                    "401": { "description": "Need token or not enough permissions" }
+                    "401": { "description": "Missing or invalid token" }
                 }
             },
             "post": {
@@ -109,7 +122,8 @@
                             }
                         }
                     },
-                    "401": { "description": "Need token or not enough permissions" },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
                     "417": { "description": "Request is invalid or does not provide the required information" },
                     "422": { "description": "Couldn't create a country code" }
                 }
@@ -132,7 +146,8 @@
                             }
                         }
                     },
-                    "401": { "description": "Need token or not enough permissions" }
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" }
                 }
             }
         },
@@ -163,7 +178,8 @@
                             }
                         }
                     },
-                    "401": { "description": "Need token or not enough permissions" },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
                     "404": { "description": "Country Code does not exists"},
                     "417": { "description": "Request is invalid or does not provide the required information" },
                     "422": { "description": "Couldn't get country code" }
@@ -195,7 +211,8 @@
                             }
                         }
                     },
-                    "401": { "description": "Need token or not enough permissions" },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
                     "404": { "description": "Country Code does not exists"},
                     "417": { "description": "Request is invalid or does not provide the required information" },
                     "422": { "description": "Couldn't delete country code" }
@@ -237,10 +254,219 @@
                             }
                         }
                     },
-                    "401": { "description": "Need token or not enough permissions" },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
                     "404": { "description": "Country Code does not exists"},
                     "417": { "description": "Request is invalid or does not provide the required information" },
                     "422": { "description": "Couldn't update country code" }
+                }
+            }
+        },
+        "/v1.0/busPasses": {
+            "get": {
+                "tags": ["Bus Passes v1.0"],
+                "summary": "List Bus Passes",
+                "operationId": "list_bus_passes_v1_0",
+                "parameters": [
+                  { "$ref": "#/components/parameters/pagePage" },
+                  { "$ref": "#/components/parameters/pageLimit" },
+                  {
+                    "$ref": "#/components/parameters/pageSort",
+                    "schema": {
+                      "type" : "string",
+                      "enum": ["id","discount","localityLevel","duration"]
+                    }
+                  },
+                  {
+                    "name": "localityLevel",
+                    "in": "query",
+                    "description": "List bus passes that includes this locality level",
+                    "required": false,
+                    "schema": {
+                      "type": "integer"
+                    },
+                    "example" : "2"
+                  }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bus Passes listed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/PageBusPass"
+                                  }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Missing or invalid token" }
+                }
+            },
+            "post": {
+                "tags": ["Bus Passes v1.0"],
+                "summary": "Create Bus Pass",
+                "operationId": "create_bus_pass_v1_0",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CreatingBusPass"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Bus Pass Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/BusPass"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't create the bus pass" }
+                }
+            },
+            "delete": {
+                "tags": ["Bus Passes v1.0"],
+                "summary": "Clear All Bus Passes",
+                "operationId": "clear_bus_passes_v1_0",
+                "responses": {
+                    "200": {
+                        "description": "Bus Passes Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/BusPass"
+                                  }
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" }
+                }
+            }
+        },
+        "/v1.0/busPasses/{id}": {
+            "get": {
+                "tags": ["Bus Passes v1.0"],
+                "summary": "Get Bus Pass Details",
+                "operationId": "get_bus_pass_v1_0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "ID of Bus Pass"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bus Pass Details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/BusPassDetails"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
+                    "404": { "description": "Bus Pass does not exists"},
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't get bus pass" }
+                }
+            },
+            "delete": {
+                "tags": ["Bus Passes v1.0"],
+                "summary": "Delete Bus Pass",
+                "operationId": "delete_bus_pass_v1_0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "ID of Bus Pass"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bus Pass disabled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/BusPass"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
+                    "404": { "description": "Bus Pass does not exists"},
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't disable bus pass" }
+                }
+            },
+            "put": {
+                "tags": ["Bus Passes v1.0"],
+                "summary": "Update Bus Pass",
+                "operationId": "update_bus_pass_v1_0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "ID of Bus Pass"
+                        }
+                    }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UpdatingBusPass"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Bus Pass updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                  "$ref": "#/components/schemas/BusPass"
+                                }
+                            }
+                        }
+                    },
+                    "401": { "description": "Missing or invalid token" },
+                    "403": { "description": "Not enough permissions" },
+                    "404": { "description": "Bus Pass does not exists"},
+                    "417": { "description": "Request is invalid or does not provide the required information" },
+                    "422": { "description": "Couldn't update bus pass" }
                 }
             }
         }
@@ -253,60 +479,97 @@
             "bearerFormat": "JWT"
           }
         },
+        "parameters": {
+          "pagePage": {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (starting from 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "example" : "3"
+          },
+          "pageLimit": {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "example" : "15"
+          },
+          "pageSort": {
+            "name": "sort",
+            "in": "query",
+            "description": "Comma-separated list of fields to sort by. FORMAT : {<name>:<(1 = ASC| -1 = DESC)>} ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example" : "{id:1,name:-1}"
+          }
+        },
         "schemas" : {
           "GettingToken" : {
             "type": "object",
-            "required" : ["username","password","instance","line"],
+            "required" : ["username","password","grantType"],
             "properties": {
               "username": {
                 "type": "string",
-                "description": "Username used in ERP",
+                "description": "ID of user",
                 "example": "your_username"
               },
               "password": {
                 "type": "string",
-                "description": "Password of ERP user",
+                "description": "Password of user",
                 "example": "your_password"
               },
-              "instance": {
+              "grantType": {
                 "type": "string",
-                "description": "Instance used in ERP",
-                "example": "your_instance"
-              },
-              "line": {
-                "enum": ["professional", "executive"],
-                "description": "Line used in ERP",
-                "example": "your_line"
-              },
-              "company": {
-                "type": "string",
-                "description": "Company code used in ERP (highly recommended)",
-                "example": "your_company"
-              },
-              "token": {
-                "type": "string",
-                "description": "Token you want to be recycle",
-                "example": "Adjf543..."
+                "description": "Grant Type of token",
+                "example": "password"
               }
             }
           },
           "TokenResponse" : {
             "type": "object",
             "properties": {
-              "access_token": {
+              "accessToken": {
                 "type": "string",
                 "description": "Token ready to be used",
                 "example": "HJVvhg34..."
               },
-              "token_type": {
+              "user" : {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "ID of username related to the token",
+                    "example": "your_username"
+                  },
+                  "level": {
+                    "type": "string",
+                    "description": "Level of user related to the token",
+                    "example": "traveller"
+                  }
+                }
+              },
+              "expiresIn": {
+                "type": "integer",
+                "description": "Minutes until given token expires",
+                "example": 60
+              },
+              "tokenType": {
                 "type": "string",
                 "description": "Type of Authentication",
-                "example": "Bearer"
-              },
-              "expires_in": {
-                "type": "integer",
-                "description": "Seconds until token given expires",
-                "example": 1199
+                "example": "JWT"
               }
             }
           },
@@ -416,6 +679,150 @@
                 "type": "string",
                 "description": "Name of Country",
                 "example": "Spain"
+              }
+            }
+          },
+          "BusPass" : {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of Bus Pass",
+                "example": "RGL"
+              },
+              "discount": {
+                "type": "float",
+                "description": "Discount of Bus Pass",
+                "example": 50.0
+              },
+              "localityLevel": {
+                "type": "integer",
+                "description": "Locality Level the Bus Pass includes",
+                "example": 2
+              },
+              "duration": {
+                "type": "integer",
+                "description": "Duration (days) of the Bus Pass",
+                "example": 30
+              },
+              "active": {
+                "type": "boolean",
+                "description": "Is Bus Pass active?",
+                "example": true
+              }
+            }
+          },
+          "BusPassDetails" : {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of Bus Pass",
+                "example": "RGL"
+              },
+              "discount": {
+                "type": "float",
+                "description": "Discount of Bus Pass",
+                "example": 50.0
+              },
+              "localityLevel": {
+                "type": "integer",
+                "description": "Locality Level the Bus Pass includes",
+                "example": 2
+              },
+              "duration": {
+                "type": "integer",
+                "description": "Duration (days) of the Bus Pass",
+                "example": 30
+              },
+              "active": {
+                "type": "boolean",
+                "description": "Is Bus Pass active?",
+                "example": true
+              },
+              "usersCount" : {
+                "type": "object",
+                "properties": {
+                  "active": {
+                    "type": "integer",
+                    "description": "Number of users who actively uses this Bus Pass",
+                    "example": 4
+                  },
+                  "expired": {
+                    "type": "integer",
+                    "description": "Number of users that have this Bus Pass but it's expired",
+                    "example": 17
+                  }
+                }
+              }
+            }
+          },
+          "PageBusPass": {
+            "allOf": [
+                { 
+                    "$ref": "#/components/schemas/Page" 
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "array",
+                            "items": { 
+                                "$ref": "#/components/schemas/BusPass" 
+                            }
+                        }
+                    }
+                }
+            ]
+          },
+          "CreatingBusPass" : {
+            "type": "object",
+            "required" : ["id","discount","localityLevel","duration"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ID of Bus Pass",
+                "example": "RGL"
+              },
+              "discount": {
+                "type": "float",
+                "description": "Discount of Bus Pass",
+                "example": 50.0
+              },
+              "localityLevel": {
+                "type": "integer",
+                "description": "Locality Level the Bus Pass includes",
+                "example": 2
+              },
+              "duration": {
+                "type": "integer",
+                "description": "Duration (days) of the Bus Pass",
+                "example": 30
+              }
+            }
+          },
+          "UpdatingBusPass" : {
+            "type": "object",
+            "properties": {
+              "discount": {
+                "type": "float",
+                "description": "Discount of Bus Pass",
+                "example": 50.0
+              },
+              "localityLevel": {
+                "type": "integer",
+                "description": "Locality Level the Bus Pass includes",
+                "example": 2
+              },
+              "duration": {
+                "type": "integer",
+                "description": "Duration (days) of the Bus Pass",
+                "example": 30
+              },
+              "active": {
+                "type": "boolean",
+                "description": "Is Bus Pass active?",
+                "example": true
               }
             }
           }

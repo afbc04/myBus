@@ -24,8 +24,10 @@ namespace Models {
 
         public static async Task<ModelListing<T>> execute_get_list<T>(IQuery querie, string collection, string attributes, Func<NpgsqlDataReader, T> serializer) {
 
-            string listing_sql = $"SELECT {attributes} FROM {collection} {querie.get_sql_listing()};";
-            string count_sql = $"SELECT COUNT(*) FROM {collection} {querie.get_sql_filtering()};";
+            string filtering = querie.get_sql_filtering();
+
+            string listing_sql = $"SELECT {attributes} FROM {collection} {filtering} {querie.get_sql_listing()};";
+            string count_sql = $"SELECT COUNT(*) FROM {collection} {filtering};";
 
             await using var conn = new NpgsqlConnection(ModelsManager.connection_string);
             await conn.OpenAsync();
@@ -59,6 +61,35 @@ namespace Models {
 
             await transaction.CommitAsync();
             return new ModelListing<T>(total, list);
+
+        }
+
+        public static async Task<IList<T>> execute_clear<T>(string select_sql,string delete_sql,Func<NpgsqlDataReader, T> serializer) {
+            
+            await using var conn = new NpgsqlConnection(ModelsManager.connection_string);
+            await conn.OpenAsync();
+
+            await using var transaction = await conn.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            var list = new List<T>();
+            await using (var cmd_select = conn.CreateCommand()) {
+                cmd_select.Transaction = transaction;
+                cmd_select.CommandText = select_sql;
+
+                await using var reader = await cmd_select.ExecuteReaderAsync();
+                while (await reader.ReadAsync()) {
+                    list.Add(serializer(reader));
+                }
+            }
+
+            await using (var cmd_delete = conn.CreateCommand()) {
+                cmd_delete.Transaction = transaction;
+                cmd_delete.CommandText = delete_sql;
+                await cmd_delete.ExecuteNonQueryAsync();
+            }
+
+            await transaction.CommitAsync();
+            return list;
 
         }
 

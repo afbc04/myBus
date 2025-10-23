@@ -1,62 +1,47 @@
 using Npgsql;
-using Pages;
+using Queries;
 
 namespace Models {
 
     public class BusPassModel {
-
-        public BusPassModel() {}
-
-        public async Task<IList<BusPass>> clear() {
-
-            string list_sql = "SELECT * FROM BusPasses;";
-
-            var bus_pass_list = await ModelUtil.execute_query(list_sql, async cmd => {
-
-                var list = new List<BusPass>();
-                await using var reader = await cmd.ExecuteReaderAsync();
-                
-                while (await reader.ReadAsync())
-                    list.Add(new BusPass(
+        
+        private static BusPass _serialize(NpgsqlDataReader reader) {
+            return new BusPass(
                         reader.GetString(0), 
                         reader.GetDouble(1),
                         reader.GetInt16(2),
                         reader.GetInt32(3),
-                        reader.GetBoolean(4)
-                        ));
-                
-                return list;
-
-            });
-
-            string delete_sql = "UPDATE BusPasses SET active = false;";
-            await ModelUtil.execute_query(delete_sql, async cmd => {
-
-                await cmd.ExecuteNonQueryAsync();
-                return true;
-
-            });
-
-            return bus_pass_list;
-
+                        reader.GetBoolean(4));
         }
 
+        private static BusPassFull _serialize_full(NpgsqlDataReader reader) {
+            return new BusPassFull(
+                        reader.GetString(0), 
+                        reader.GetDouble(1),
+                        reader.GetInt16(2),
+                        reader.GetInt32(3),
+                        reader.GetBoolean(4),
+                        0,0);
+        }
+
+        public async Task<IList<BusPass>> clear() {
+            return await ModelUtil.execute_clear<BusPass>(
+                "SELECT id, discount, localityLevel, duration, active FROM BusPasses;",
+                "UPDATE BusPasses SET active = false;",
+                _serialize
+            );
+        }
 
         public async Task<BusPass?> get(string ID) {
 
-            string sql = "SELECT * FROM BusPasses WHERE id = @id;";
+            string sql = "SELECT id, discount, localityLevel, duration, active FROM BusPasses WHERE id = @id;";
             return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id",ID);
                 await using var reader = await cmd.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync())
-                    return new BusPass(
-                        reader.GetString(0), 
-                        reader.GetDouble(1),
-                        reader.GetInt16(2),
-                        reader.GetInt32(3),
-                        reader.GetBoolean(4));
+                    return _serialize(reader);
 
                 return null;
 
@@ -77,7 +62,7 @@ namespace Models {
             try {
 
                 BusPassFull? bus_pass = null;
-                string sql_search_bus_pass = "SELECT * FROM BusPasses WHERE id = @id;";
+                string sql_search_bus_pass = "SELECT id, discount, localityLevel, duration, active FROM BusPasses WHERE id = @id;";
 
                 await using (var cmd = new NpgsqlCommand(sql_search_bus_pass, conn, transaction)) {
 
@@ -85,18 +70,10 @@ namespace Models {
                     await using var reader = await cmd.ExecuteReaderAsync();
 
                     if (await reader.ReadAsync())
-                        bus_pass = new BusPassFull(
-                            reader.GetString(0),
-                            reader.GetDouble(1),
-                            reader.GetInt16(2),
-                            reader.GetInt32(3),
-                            reader.GetBoolean(4),
-                            0,
-                            0
-                        );
-                    
+                        bus_pass = _serialize_full(reader);
 
                     await reader.CloseAsync();
+
                 }
 
                 if (bus_pass != null) {
@@ -110,7 +87,7 @@ namespace Models {
                     }
 
                     bus_pass.users_active = users_active;
-                    bus_pass.users_expired = users_active; //TODO: Fix this value
+                    bus_pass.users_expired = users_active;
 
                 }
 
@@ -133,7 +110,6 @@ namespace Models {
             return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id", ID);
-                
                 var count = Convert.ToInt64(await cmd.ExecuteScalarAsync());
                 return count > 0;
 
@@ -147,7 +123,6 @@ namespace Models {
             return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id", ID);
-                
                 var lines = await cmd.ExecuteNonQueryAsync();
                 return lines > 0;
 
@@ -209,29 +184,8 @@ namespace Models {
         }
 
 
-        public async Task<IList<BusPass>> values(PageInput page) {
-
-            string sql = "SELECT * FROM BusPasses";
-            sql += page.get_sql_listing();
-            sql += ";";
-
-            return await ModelUtil.execute_query(sql, async cmd => {
-
-                var list = new List<BusPass>();
-                await using var reader = await cmd.ExecuteReaderAsync();
-                
-                while (await reader.ReadAsync())
-                    list.Add(new BusPass(
-                        reader.GetString(0), 
-                        reader.GetDouble(1),
-                        reader.GetInt16(2),
-                        reader.GetInt32(3),
-                        reader.GetBoolean(4)));
-                
-                return list;
-
-            });
-
+        public async Task<ModelListing<BusPass>> values(QueryBusPass querie) {
+            return await ModelUtil.execute_get_list(querie,"BusPasses","id, discount, localityLevel, duration, active",_serialize);
         }
 
         public async Task<IList<string>> keys() {
@@ -240,7 +194,6 @@ namespace Models {
             return await ModelUtil.execute_query(sql, async cmd => {
 
                 var list = new List<string>();
-                
                 await using var reader = await cmd.ExecuteReaderAsync();
                 
                 while (await reader.ReadAsync())
@@ -253,17 +206,11 @@ namespace Models {
         }
 
         public async Task<long> size() {
-
-            string sql = "SELECT COUNT(*) FROM BusPasses;";
-            return await ModelUtil.execute_query(sql, async cmd =>
-                Convert.ToInt64(await cmd.ExecuteScalarAsync()));
-
+            return await ModelUtil.execute_get_size("BusPasses");
         }
 
         public async Task<bool> empty() {
-
             return await this.size() == 0;
-
         }
 
     }
