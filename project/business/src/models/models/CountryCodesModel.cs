@@ -10,39 +10,11 @@ namespace Models {
         }
 
         public async Task<IList<CountryCode>> clear() {
-
-            await using var conn = new NpgsqlConnection(ModelsManager.connection_string);
-            await conn.OpenAsync();
-
-            await using var transaction = await conn.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
-
-            string list_sql = "SELECT id, name FROM CountryCodes;";
-            var country_code_list = new List<CountryCode>();
-
-            await using (var cmd_select = conn.CreateCommand()) {
-
-                cmd_select.Transaction = transaction;
-                cmd_select.CommandText = list_sql;
-
-                await using var reader = await cmd_select.ExecuteReaderAsync();
-                while (await reader.ReadAsync()) {
-                    country_code_list.Add(_serialize(reader));
-                }
-            }
-
-            string delete_sql = "DELETE FROM CountryCodes;";
-            await using (var cmd_delete = conn.CreateCommand()) {
-
-                cmd_delete.Transaction = transaction;
-                cmd_delete.CommandText = delete_sql;
-                await cmd_delete.ExecuteNonQueryAsync();
-
-            }
-
-            await transaction.CommitAsync();
-
-            return country_code_list;
-            
+            return await ModelUtil.execute_clear<CountryCode>(
+                "SELECT id, name FROM CountryCodes;",
+                "DELETE FROM CountryCodes;",
+                _serialize
+            );
         }
 
         public async Task<CountryCode?> get(string ID) {
