@@ -3,6 +3,7 @@ using Token;
 using Models;
 using Nito.AsyncEx;
 using Pages;
+using Queries;
 
 namespace Controller {
 
@@ -18,9 +19,14 @@ namespace Controller {
             this._count = this._model.size().Result;
         }
 
-        // ------------------ public methods ------------------
+        /// #################################
+        ///           PUBLIC METHODS
+        /// #################################
 
         public async Task<SendingPacket> create(AccessToken? token, BusPassRequestWrapper request_wrapper) {
+
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can create bus passes",403);
 
             var error_lists = validate_bus_pass(request_wrapper);
             if (error_lists.Count() > 0)
@@ -40,8 +46,11 @@ namespace Controller {
 
         }
 
-        public async Task<SendingPacket> list(AccessToken? token, PageRequest page_request) {
+        public async Task<SendingPacket> list(AccessToken? token, QueryBusPass query) {
 
+            return new PacketSuccess(200);
+
+            /*
             var listing_errors = page_request.validate(new Dictionary<string,string>{
                 {"id", "id"},
                 {"discount", "discount"},
@@ -56,11 +65,14 @@ namespace Controller {
             var bus_pass_list = list.Select(cc => (object) cc.to_json()).ToList();
             var page_output = new PageOutput(page_input,this._count,bus_pass_list);
             
-            return new PacketSuccess(200, page_output.to_json());
+            return new PacketSuccess(200, page_output.to_json());*/
 
         }
 
         public async Task<SendingPacket> clear(AccessToken? token) {
+
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can clear bus passes",403);
 
             var list = await this._model.clear();
             var bus_pass_list = list.Select(cc => (object) cc.to_json()).ToList();
@@ -76,7 +88,7 @@ namespace Controller {
 
         public async Task<SendingPacket> get(AccessToken? token, string id) {
 
-            BusPass? bus_pass = await this._model.get(id.ToUpper());
+            BusPassFull? bus_pass = await this._model.get_full(id.ToUpper());
             if (bus_pass == null)
                 return new PacketFail(404);
 
@@ -85,6 +97,9 @@ namespace Controller {
         }
 
         public async Task<SendingPacket> delete(AccessToken? token, string id) {
+
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can delete bus passes",403);
 
             id = id.ToUpper();
 
@@ -96,12 +111,17 @@ namespace Controller {
             if (was_deleted == false)
                 return new PacketFail("Failed when deleting bus pass in database",422);
 
+            var bus_pass_deleted = await this._model.get(id);
+
             this._count--;
-            return new PacketSuccess(200, bus_pass.to_json());
+            return new PacketSuccess(200, bus_pass_deleted!.to_json());
 
         }
 
         public async Task<SendingPacket> update(AccessToken? token, string id, BusPassRequestWrapper request_wrapper) {
+
+            if (!AccessToken.has_admin_perms(token))
+                return new PacketFail("Only administrators can update bus passes",403);
 
             id = id.ToUpper();
 
@@ -125,7 +145,9 @@ namespace Controller {
 
         }
 
-        // ------------------ private helper ------------------
+        /// #################################
+        ///           PRIVATE METHODS
+        /// #################################
 
         private IList<string> validate_bus_pass(BusPassRequestWrapper request) {
 

@@ -1,6 +1,8 @@
+using Models;
+
 namespace Pages {
 
-    public class PageOutput {
+    public class PageOutput<T> {
 
         public long total_elements {get; private set;}
         public long page_elements {get; private set;}
@@ -11,20 +13,20 @@ namespace Pages {
         public bool all {get; private set;}
         public bool first_page {get; private set;}
         public bool last_page {get; private set;}
-        public IList<object> data {get; private set;}
+        public IList<T> data {get; private set;}
 
-        public PageOutput(PageInput page_input,long total_elements, IList<object> data) {
+        public PageOutput(PageInput page_input,ModelListing<T> listing) {
 
-            this.data = data;
+            this.data = listing.list;
             this.page = page_input.page;
             this.limit = page_input.limit;
-            this.total_elements = total_elements;
+            this.total_elements = listing.all_elements;
             this.page_elements = data.Count();
             this.empty = this.page_elements == 0;
-            this.all = this.page_elements == total_elements;
+            this.all = this.page_elements == this.total_elements;
 
-            this.total_pages = total_elements / page_input.limit;
-            if (total_elements > this.total_pages * page_input.limit)
+            this.total_pages = this.total_elements / page_input.limit;
+            if (this.total_elements > this.total_pages * page_input.limit)
                 this.total_pages++;
 
             this.first_page = this.page == 1;

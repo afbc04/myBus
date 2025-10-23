@@ -13,7 +13,7 @@ public class API {
 
             ProgramHandler.start_logger();
             PacketTemplates.TemplateLoader.load_templates();
-            await DatabaseInit.init();
+            await ModelsManager.init();
             API.controller = new();
 
             return true;

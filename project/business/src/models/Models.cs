@@ -1,21 +1,16 @@
-using Npgsql;
-
 namespace Models {
 
-    public class DatabaseInit {
+    public class ModelListing<T> {
 
-        public static async Task init() {
+        public long all_elements {get; set;}
+        public IList<T> list {get; set;}
 
-            await ModelTableCreator.country_codes();
-            await ModelTableCreator.bus_passes();
-            await ModelTableCreator.users();
-            await ModelTableCreator.users_view();
-            await ModelTableCreator.token_view();
-
+        public ModelListing(long all_elements, IList<T> list) {
+            this.all_elements = all_elements;
+            this.list = list;
         }
 
     }
-
 
     public class ModelsManager {
 
@@ -26,37 +21,14 @@ namespace Models {
             Username={Environment.GetEnvironmentVariable("POSTGRES_USER")};
             Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")}";
 
-        public static async Task<TResult> execute_query<TResult>(string sql, Func<NpgsqlCommand, Task<TResult>> func) {
+        public static async Task init() {
 
-            await using var conn = new NpgsqlConnection(ModelsManager.connection_string);
-            await conn.OpenAsync();
-            await using var cmd = new NpgsqlCommand(sql, conn);
-            return await func(cmd);
+            await ModelTableCreator.country_codes();
+            await ModelTableCreator.bus_passes();
+            await ModelTableCreator.users();
+            await ModelTableCreator.users_view();
+            await ModelTableCreator.token_view();
 
-        }
-
-        public static string? get_string(NpgsqlDataReader reader, int index) {
-            return reader.IsDBNull(index) ? null : reader.GetString(index);
-        }
-
-        public static int? get_int(NpgsqlDataReader reader, int index) {
-            return reader.IsDBNull(index) ? null : reader.GetInt32(index);
-        }
-
-        public static double? get_double(NpgsqlDataReader reader, int index) {
-            return reader.IsDBNull(index) ? null : reader.GetDouble(index);
-        }
-
-        public static bool? get_bool(NpgsqlDataReader reader, int index) {
-            return reader.IsDBNull(index) ? null : reader.GetBoolean(index);
-        }
-
-        public static DateOnly? get_date(NpgsqlDataReader reader, int index) {
-            return reader.IsDBNull(index) ? null : DateOnly.FromDateTime(reader.GetDateTime(index));
-        }
-
-        public static DateTime? get_date_time(NpgsqlDataReader reader, int index) {
-            return reader.IsDBNull(index) ? null : reader.GetDateTime(index);
         }
 
     }

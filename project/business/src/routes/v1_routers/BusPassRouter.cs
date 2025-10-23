@@ -1,6 +1,7 @@
 using PacketHandlers;
 using Token;
 using Pages;
+using Queries;
 
 namespace Routers;
 
@@ -31,7 +32,7 @@ public static class BusPassRouters {
                 return PacketUtils.send_packet(await API.controller!.list_bus_pass(
 
                     packet.access_token,
-                    new PageRequest(request)
+                    new QueryBusPass(packet.queries!)
 
                     ));
             });

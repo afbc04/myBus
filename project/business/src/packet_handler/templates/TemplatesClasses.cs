@@ -56,4 +56,46 @@ namespace PacketTemplates {
 
     }
 
+    public class TemplateValidatorQueryItem {
+
+        public Type datatype { get; set; }
+
+        public TemplateValidatorQueryItem(Type datatype) {
+            this.datatype = datatype;
+        }
+
+    }
+
+    public class TemplateValidatorQuery {
+        
+        public bool has_page { get; set; }
+        public HashSet<string> sort_opts {get; set;}
+        public Dictionary<string, TemplateValidatorQueryItem> queries { get; set; }
+
+        public TemplateValidatorQuery(bool has_page) {
+            this.has_page = has_page;
+            this.queries = new();
+            this.sort_opts = new();
+
+            if (has_page) {
+                this.queries["page"] = new TemplateValidatorQueryItem(typeof(long));
+                this.queries["limit"] = new TemplateValidatorQueryItem(typeof(long));
+                this.queries["sort"] = new TemplateValidatorQueryItem(typeof(string));
+            }
+
+        }
+
+        public void add_queries(Dictionary<string, TemplateValidatorQueryItem> queries) {
+            
+            foreach(string key in queries.Keys)
+                this.queries[key] = queries[key];
+
+        }
+
+        public void add_sort_opts(HashSet<string> sort_opts) {
+            this.sort_opts = sort_opts;
+        }
+
+    }
+
 }

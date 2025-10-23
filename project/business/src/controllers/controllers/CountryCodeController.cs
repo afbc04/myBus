@@ -2,6 +2,7 @@ using PacketHandlers;
 using Token;
 using Models;
 using Nito.AsyncEx;
+using Queries;
 using Pages;
 
 namespace Controller {
@@ -10,12 +11,10 @@ namespace Controller {
 
         public readonly AsyncReaderWriterLock Lock;
         private CountryCodeModel _model;
-        private long _count;
 
         public CountryCodeController() {
             this.Lock = new();
             this._model = new CountryCodeModel();
-            this._count = this._model.size().Result;
         }
 
         /// #################################
@@ -40,24 +39,18 @@ namespace Controller {
             if (inserted_country_code == false)
                 return new PacketFail("Failed when inserting country code into the database",422);
 
-            this._count++;
             return new PacketSuccess(201, country_code_to_be_inserted.to_json());
 
         }
 
-        public async Task<SendingPacket> list(AccessToken? token, PageRequest page_request) {
+        public async Task<SendingPacket> list(AccessToken? token, QueryCountryCode querie) {
 
-            var listing_errors = page_request.validate(new Dictionary<string,string>{
-                {"id", "id"},
-                {"name", "name"}
-                });
-            if (listing_errors.Count() > 0)
-                return new PacketFail("Listing parameters are not valid",417,new Dictionary<string,object>(){ ["errors"] = listing_errors});
+            var model_list = await this._model.values(querie);
 
-            var page_input = page_request.convert();
-            var list = await this._model.values(page_input);
-            var country_code_list = list.Select(cc => (object) cc.to_json()).ToList();
-            var page_output = new PageOutput(page_input,this._count,country_code_list);
+            var country_code_list = model_list.list;
+            country_code_list.Select(cc => cc.to_json()).ToList();
+
+            var page_output = new PageOutput<CountryCode>(querie.get_page(),model_list);
             
             return new PacketSuccess(200, page_output.to_json());
 
@@ -66,18 +59,21 @@ namespace Controller {
         public async Task<SendingPacket> clear(AccessToken? token) {
 
             if (!AccessToken.has_admin_perms(token))
-                return new PacketFail("Only administrators can create country codes",403);
+                return new PacketFail("Only administrators can clear country codes",403);
 
             var list = await this._model.clear();
             var country_code_list = list.Select(cc => (object) cc.to_json()).ToList();
-            this._count = 0;
 
             return new PacketSuccess(200, country_code_list);
 
         }
 
-        public async Task<bool> contains(AccessToken? token, string id) {
-            return await this._model.contains(id);
+        public async Task<bool> aux_contains(string ID) {
+            return await this._model.contains(ID);
+        }
+
+        public async Task<long> aux_count() {
+            return await this._model.size();
         }
 
         public async Task<SendingPacket> get(AccessToken? token, string id) {
@@ -93,7 +89,7 @@ namespace Controller {
         public async Task<SendingPacket> delete(AccessToken? token, string id) {
 
             if (!AccessToken.has_admin_perms(token))
-                return new PacketFail("Only administrators can create country codes",403);
+                return new PacketFail("Only administrators can delete country codes",403);
 
             id = id.ToUpper();
 
@@ -105,7 +101,6 @@ namespace Controller {
             if (was_deleted == false)
                 return new PacketFail("Failed when deleting country code in database",422);
 
-            this._count--;
             return new PacketSuccess(200, country_code.to_json());
 
         }
@@ -113,7 +108,7 @@ namespace Controller {
         public async Task<SendingPacket> update(AccessToken? token, string id, CountryCodeRequestWrapper request_wrapper) {
 
             if (!AccessToken.has_admin_perms(token))
-                return new PacketFail("Only administrators can create country codes",403);
+                return new PacketFail("Only administrators can update country codes",403);
 
             id = id.ToUpper();
 
