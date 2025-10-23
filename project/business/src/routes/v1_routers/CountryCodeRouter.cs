@@ -1,6 +1,5 @@
 using PacketHandlers;
-using Token;
-using Pages;
+using Queries;
 
 namespace Routers;
 
@@ -11,28 +10,28 @@ public static class CountryCodeRouters {
         var app = group.MapGroup("/countryCodes").AllowAnonymous();
 
         // POST /v1.0/countryCodes
-        app.MapPost("", async (HttpRequest request) =>
+        app.MapPost("", async (HttpRequest request) => {
 
-            await PacketUtils.validate_and_reply(request, "countryCodes/create", async (packet) => {
+            return await PacketUtils.validate_and_reply(request, "countryCodes/create", async (packet) => {
                 return PacketUtils.send_packet(await API.controller!.create_country_code(
 
                     packet.access_token,
                     new CountryCodeRequestWrapper((string) packet.body!["id"] ,packet.body!)
                     
                     ));
-            })
+            });
 
-        );
+        });
 
 
         // GET /v1.0/countryCodes
         app.MapGet("", async (HttpRequest request) => {
 
-            return await PacketUtils.validate_and_reply(request, "countryCodes/get", async (packet) => {
+            return await PacketUtils.validate_and_reply(request, "countryCodes/list", async (packet) => {
                 return PacketUtils.send_packet(await API.controller!.list_country_code(
 
                     packet.access_token,
-                    new PageRequest(request)
+                    new QueryCountryCode(packet.queries!)
 
                     ));
             });

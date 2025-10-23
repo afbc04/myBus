@@ -1,6 +1,7 @@
 using PacketHandlers;
 using Token;
 using Pages;
+using Queries;
 
 namespace Routers;
 
@@ -27,11 +28,11 @@ public static class BusPassRouters {
         // GET /v1.0/BusPasses
         app.MapGet("", async (HttpRequest request) => {
 
-            return await PacketUtils.validate_and_reply(request, "busPasses/get", async (packet) => {
+            return await PacketUtils.validate_and_reply(request, "busPasses/list", async (packet) => {
                 return PacketUtils.send_packet(await API.controller!.list_bus_pass(
 
                     packet.access_token,
-                    new PageRequest(request)
+                    new QueryBusPass(packet.queries!)
 
                     ));
             });

@@ -1,6 +1,7 @@
 using PacketHandlers;
 using Token;
 using Pages;
+using Queries;
 
 namespace Routers;
 
@@ -32,7 +33,7 @@ public static class UserRouters {
                 return PacketUtils.send_packet(await API.controller!.list_user(
 
                     packet.access_token,
-                    new PageRequest(request)
+                    new QueryUser(packet.queries!)
 
                     ));
             });

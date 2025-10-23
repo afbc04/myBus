@@ -10,7 +10,7 @@ namespace Models {
         public async Task<AuthUser?> get(string ID) {
 
             string sql = "SELECT * FROM VAuthUsers WHERE id = @id;";
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id",ID);
                 await using var reader = await cmd.ExecuteReaderAsync();

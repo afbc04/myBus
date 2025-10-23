@@ -1,4 +1,5 @@
 using Token;
+using Queries;
 
 namespace PacketHandlers {
 
@@ -12,10 +13,12 @@ namespace PacketHandlers {
 
         public AccessToken? access_token {get;}
         public IDictionary<string,object>? body {get;}
+        public Querieable? queries {get;}
 
-        public PacketExtracted(AccessToken? access_token, IDictionary<string,object>? body) {
+        public PacketExtracted(AccessToken? access_token, IDictionary<string,object>? body, Querieable? queries) {
             this.access_token = access_token;
             this.body = body;
+            this.queries = queries;
         }
 
     }

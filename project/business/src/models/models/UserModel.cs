@@ -12,7 +12,7 @@ namespace Models {
             var users_list = await values();
 
             string delete_sql = "DELETE FROM Users;";
-            await ModelsManager.execute_query(delete_sql, async cmd => {
+            await ModelUtil.execute_query(delete_sql, async cmd => {
 
                 await cmd.ExecuteNonQueryAsync();
                 return true;
@@ -27,7 +27,7 @@ namespace Models {
         public async Task<User?> get(string ID) {
 
             string sql = "SELECT * FROM Users WHERE id = @id;";
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id",ID);
                 await using var reader = await cmd.ExecuteReaderAsync();
@@ -38,21 +38,21 @@ namespace Models {
                         reader.GetString(0), 
                         reader.GetString(1),
                         reader.GetInt32(2),
-                        ModelsManager.get_string(reader,3),
+                        ModelUtil.get_string(reader,3),
                         reader.GetChar(4),
-                        ModelsManager.get_date(reader,5),
-                        ModelsManager.get_date(reader,6),
-                        ModelsManager.get_string(reader,7),
-                        ModelsManager.get_string(reader,8),
-                        ModelsManager.get_date(reader,9),
+                        ModelUtil.get_date(reader,5),
+                        ModelUtil.get_date(reader,6),
+                        ModelUtil.get_string(reader,7),
+                        ModelUtil.get_string(reader,8),
+                        ModelUtil.get_date(reader,9),
                         reader.GetChar(10),
-                        ModelsManager.get_string(reader,11),
+                        ModelUtil.get_string(reader,11),
                         reader.GetDateTime(12),
                         reader.GetBoolean(13),
-                        ModelsManager.get_bool(reader,14),
-                        ModelsManager.get_string(reader,15),
-                        ModelsManager.get_date(reader,16),
-                        ModelsManager.get_date(reader,17)
+                        ModelUtil.get_bool(reader,14),
+                        ModelUtil.get_string(reader,15),
+                        ModelUtil.get_date(reader,16),
+                        ModelUtil.get_date(reader,17)
                         );
 
                 }
@@ -66,21 +66,21 @@ namespace Models {
         public async Task<UserFull?> get_full(string ID) {
 
             string sql = "SELECT * FROM VUsers WHERE id = @id;";
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id",ID);
                 await using var reader = await cmd.ExecuteReaderAsync();
 
                 if (await reader.ReadAsync()) {
 
-                    string? country_code_id = ModelsManager.get_string(reader,11);
+                    string? country_code_id = ModelUtil.get_string(reader,11);
                     CountryCode? country_code = null;
 
                     if (country_code_id != null) {
                         country_code = new CountryCode(country_code_id,reader.GetString(12));
                     }
 
-                    string? bus_pass_id = ModelsManager.get_string(reader,16);
+                    string? bus_pass_id = ModelUtil.get_string(reader,16);
                     UserBusPass? bus_pass = null;
 
                     if (bus_pass_id != null) {
@@ -102,18 +102,18 @@ namespace Models {
                         ID,
                         reader.GetString(1),
                         reader.GetInt32(2),
-                        ModelsManager.get_string(reader,3),
+                        ModelUtil.get_string(reader,3),
                         reader.GetChar(4),
-                        ModelsManager.get_date(reader,5),
-                        ModelsManager.get_date(reader,6),
-                        ModelsManager.get_string(reader,7),
-                        ModelsManager.get_string(reader,8),
-                        ModelsManager.get_date(reader,9),
+                        ModelUtil.get_date(reader,5),
+                        ModelUtil.get_date(reader,6),
+                        ModelUtil.get_string(reader,7),
+                        ModelUtil.get_string(reader,8),
+                        ModelUtil.get_date(reader,9),
                         reader.GetChar(10),
                         country_code_id,
                         reader.GetDateTime(13),
                         reader.GetBoolean(14),
-                        ModelsManager.get_bool(reader,15),
+                        ModelUtil.get_bool(reader,15),
                         null,
                         null,
                         null
@@ -132,7 +132,7 @@ namespace Models {
         public async Task<bool> contains(string ID) {
 
             string sql = "SELECT COUNT(*) FROM Users WHERE id = @id;";
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id", ID);
                 
@@ -146,7 +146,7 @@ namespace Models {
         public async Task<bool> delete(string ID) {
 
             string sql = "DELETE FROM Users WHERE id = @id";
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id", ID);
                 
@@ -165,7 +165,7 @@ namespace Models {
                     (id, password, salt, name, level, adminSinceDate, inactiveDate, inactiveAccountUser, email, birthDate, sex, countryCode, accountCreation, public, disablePerson, busPassID, busPassValidFrom, busPassValidUntil) 
                 VALUES (@id, @password, @salt, @name, @level, @adminSinceDate, NULL, NULL, @email, @birthDate, @sex, @countryCode, @accountCreation, @public, @disablePerson, NULL, NULL, NULL);";
 
-                return await ModelsManager.execute_query(sql, async cmd => {
+                return await ModelUtil.execute_query(sql, async cmd => {
                     
                     cmd.Parameters.AddWithValue("@id", user.ID);
                     cmd.Parameters.AddWithValue("@password", user.password);
@@ -211,7 +211,7 @@ namespace Models {
                             disablePerson = @disablePerson
                         WHERE id = @id;";
 
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 cmd.Parameters.AddWithValue("@id", user.ID);
                 cmd.Parameters.AddWithValue("@password", user.password);
@@ -241,7 +241,7 @@ namespace Models {
             sql += page.get_sql_listing();
             sql += ";";
 
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 var list = new List<UserList>();
                 await using var reader = await cmd.ExecuteReaderAsync();
@@ -249,10 +249,10 @@ namespace Models {
                 while (await reader.ReadAsync())
                     list.Add(new UserList(
                         reader.GetString(0),
-                        ModelsManager.get_string(reader,1),
+                        ModelUtil.get_string(reader,1),
                         reader.GetChar(2),
-                        ModelsManager.get_string(reader,3),
-                        ModelsManager.get_date(reader,4) == null
+                        ModelUtil.get_string(reader,3),
+                        ModelUtil.get_date(reader,4) == null
                         ));
                 
                 return list;
@@ -277,7 +277,7 @@ namespace Models {
         public async Task<IList<string>> keys() {
 
             string sql = "SELECT id FROM Users;";
-            return await ModelsManager.execute_query(sql, async cmd => {
+            return await ModelUtil.execute_query(sql, async cmd => {
 
                 var list = new List<string>();
                 
@@ -295,7 +295,7 @@ namespace Models {
         public async Task<long> size() {
 
             string sql = "SELECT COUNT(*) FROM Users;";
-            return await ModelsManager.execute_query(sql, async cmd =>
+            return await ModelUtil.execute_query(sql, async cmd =>
                 Convert.ToInt64(await cmd.ExecuteScalarAsync()));
 
         }

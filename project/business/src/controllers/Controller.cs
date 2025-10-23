@@ -2,6 +2,7 @@ using PacketHandlers;
 using Token;
 using Nito.AsyncEx;
 using Pages;
+using Queries;
 
 namespace Controller {
 
@@ -42,7 +43,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> list_country_code(AccessToken? token, PageRequest page) {
+        public async Task<SendingPacket> list_country_code(AccessToken? token, QueryCountryCode querie) {
 
             var controller_lock = await this._lock.ReaderLockAsync();
             var country_code_manager_lock = await this._country_codes.Lock.ReaderLockAsync();
@@ -50,7 +51,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._country_codes.list(token,page);
+                var response = await this._country_codes.list(token,querie);
                 return response;
                 
             } finally {
@@ -147,7 +148,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> list_bus_pass(AccessToken? token, PageRequest page) {
+        public async Task<SendingPacket> list_bus_pass(AccessToken? token, QueryBusPass querie) {
 
             var controller_lock = await this._lock.ReaderLockAsync();
             var bus_pass_manager_lock = await this._bus_passes.Lock.ReaderLockAsync();
@@ -155,7 +156,7 @@ namespace Controller {
 
             try {
 
-                var response = await this._bus_passes.list(token,page);
+                var response = await this._bus_passes.list(token,querie);
                 return response;
                 
             } finally {
@@ -247,7 +248,7 @@ namespace Controller {
                 bool does_country_code_exists = false;
 
                 if (request_wrapper.country_code_id != null)
-                    does_country_code_exists = await this._country_codes.contains(token,request_wrapper.country_code_id);
+                    does_country_code_exists = await this._country_codes.aux_contains(request_wrapper.country_code_id);
 
                 var response = await this._users.create(token,does_country_code_exists,request_wrapper);
                 return response;
@@ -259,7 +260,7 @@ namespace Controller {
         
         }
 
-        public async Task<SendingPacket> list_user(AccessToken? token, PageRequest page) {
+        public async Task<SendingPacket> list_user(AccessToken? token, QueryUser page) {
 
             var controller_lock = await this._lock.ReaderLockAsync();
             var user_manager_lock = await this._users.Lock.ReaderLockAsync();
@@ -339,7 +340,7 @@ namespace Controller {
                 bool does_country_code_exists = false;
 
                 if (request_wrapper.country_code_id != null)
-                    does_country_code_exists = await this._country_codes.contains(token,request_wrapper.country_code_id);
+                    does_country_code_exists = await this._country_codes.aux_contains(request_wrapper.country_code_id);
 
                 var response = await this._users.update(token,id,request_wrapper,does_country_code_exists);
                 return response;

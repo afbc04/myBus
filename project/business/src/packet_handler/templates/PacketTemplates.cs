@@ -6,11 +6,13 @@ namespace PacketTemplates {
     public class TemplateObject {
 
         public TemplateValidatorAuth? auth {get; set;}
+        public TemplateValidatorQuery? queries {get; set;}
         public TemplateValidatorBody? body {get; set;}
 
         public TemplateObject() {
             this.auth = null;
             this.body = null;
+            this.queries = null;
         }
 
     }
@@ -30,15 +32,16 @@ namespace PacketTemplates {
                 try {
 
                     var doc = XDocument.Load(file);
-                    var templatesList = doc.Element("templates")?.Elements("template") ?? new List<XElement>();
+                    var templates_list = doc.Element("templates")?.Elements("template") ?? new List<XElement>();
 
-                    foreach (var template in templatesList) {
+                    foreach (var template in templates_list) {
 
                         string templateID = $"{Path.GetFileNameWithoutExtension(file)}/{template.Attribute("id")!.Value}";
 
                         var template_object = new TemplateObject();
 
                         template_object.auth = handle_auth(template);
+                        template_object.queries = handle_query(template);
                         template_object.body = handle_body(template);
 
                         templates[templateID] = template_object;
@@ -130,8 +133,58 @@ namespace PacketTemplates {
             return body;
         }
 
+        private static TemplateValidatorQuery? handle_query(XElement template) {
+
+            var query_element = template.Element("query");
+
+            if (query_element == null)
+                return null;
+
+            bool has_page = (query_element.Attribute("page")?.Value ?? "FALSE").ToUpper() == "TRUE";
+            
+            var sort_string = query_element.Attribute("sort")?.Value;
+            HashSet<string> sort_opts = new HashSet<string>();
+
+            if (string.IsNullOrWhiteSpace(sort_string) == false)
+                sort_opts = new HashSet<string>(sort_string.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            
+
+            var query = new TemplateValidatorQuery(has_page);
+
+            var inner_queries = handle_inner_query(query_element);
+            query.add_queries(inner_queries);
+            query.add_sort_opts(sort_opts);
+
+            return query;
+        }
+
+        private static Dictionary<string, TemplateValidatorQueryItem> handle_inner_query(XElement element) {
+
+            var queries = new Dictionary<string, TemplateValidatorQueryItem>();
+
+            var items = element.Elements("q");
+            foreach (var item in items) {
+
+                var item_name = item.Attribute("name")?.Value;
+                if (item_name == null)
+                    continue;
+
+                Type datatype = (item.Attribute("datatype")?.Value ?? "string").ToLower() switch {
+                    "integer" => typeof(long),
+                    "float" => typeof(double),
+                    "bool" => typeof(bool),
+                    _ => typeof(string)
+                };
+
+                queries[item_name] = new TemplateValidatorQueryItem(datatype);
+            }
+
+            return queries;
+        }
+
         public static TemplateObject? get_template(string id) {
             return templates.ContainsKey(id) ? templates[id] : null;
         }
+
     }
 }

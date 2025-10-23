@@ -3,6 +3,7 @@ using Token;
 using Models;
 using Nito.AsyncEx;
 using Pages;
+using Queries;
 using System.Text.RegularExpressions;
 
 namespace Controller {
@@ -43,8 +44,10 @@ namespace Controller {
 
         }
 
-        public async Task<SendingPacket> list(AccessToken? token, PageRequest page_request) {
+        public async Task<SendingPacket> list(AccessToken? token, QueryUser query) {
 
+            return new PacketSuccess(200);
+            /*
             var listing_errors = page_request.validate(new Dictionary<string,string>{
                 {"id", "id"},
                 {"name", "name"},
@@ -58,7 +61,7 @@ namespace Controller {
             var user_list = list.Select(u => (object) u.to_json()).ToList();
             var page_output = new PageOutput(page_input,this._count,user_list);
             
-            return new PacketSuccess(200, page_output.to_json());
+            return new PacketSuccess(200, page_output.to_json());*/
 
         }
 

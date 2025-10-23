@@ -13,7 +13,7 @@ public class BusPassRequestWrapper {
         this.discount = (double?) PacketUtils.get_value_double(body,"discount");
         this.localityLevel = (long?) PacketUtils.get_value(body,"localityLevel");
         this.duration = (long?) PacketUtils.get_value(body,"duration");
-        this.isActive = (bool?) PacketUtils.get_value(body,"isActive");
+        this.isActive = (bool?) PacketUtils.get_value(body,"active");
     }
 
     public void auto_fill(BusPass bp) {
